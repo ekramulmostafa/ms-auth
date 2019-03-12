@@ -1,4 +1,4 @@
-# ms-template
+# ms-auth
 
 ## Conda
 
@@ -7,11 +7,11 @@ https://conda.io/projects/conda/en/latest/user-guide/install/index.html#regular-
 
 ### Create new environment
 conda create -n {environment-name} python=3.7
-ex: conda create -n ms-template python=3.7
+ex: conda create -n ms-auth python=3.7
 
 ### Activate enviroment
 source activate {environment-name}
-ex: source activate ms-template
+ex: source activate ms-auth
 
 ### Deactivate enviroment
 source deactivate
@@ -34,13 +34,13 @@ https://www.docker.com/products/docker-desktop
 
 docker build -t {image-name}:{version} .
 
-Ex: docker build -t template:latest .
+Ex: docker build -t auth:latest .
 
 ### Execute container:
 
 docker run --name {service-name} -d -p {mapped-port}:5000 --rm {image-name}:{version} -e ENV_VARS="{Value}"
 
-Ex: docker run -e DATABASE_URL='postgresql://postgres:12345678@host.docker.internal:5433/ms-template' --name template -d -p 8000:5000 --rm template:latest
+Ex: docker run -e DATABASE_URL='postgresql://postgres:12345678@host.docker.internal:5433/ms-auth' --name auth -d -p 8000:5000 --rm auth:latest
 
 This will run the service on:
 http://localhost:8000/
@@ -48,18 +48,18 @@ http://localhost:8000/
 ### Run test:
 docker run --entry-point "./test.sh" --name {service-name} --rm {image-name}:{version}
 Ex:
-docker run --entrypoint "./test.sh" --name template-test --rm template:latest
+docker run --entrypoint "./test.sh" --name auth-test --rm auth:latest
 
 ### Run lint test:
 docker run --entry-point "./lint.sh" --name {service-name} --rm {image-name}:{version}
 Ex:
-docker run --entrypoint "./lint.sh" --name template-lint --rm template:latest
+docker run --entrypoint "./lint.sh" --name auth-lint --rm auth:latest
 
 ### Stop a container:
 
 docker stop {service-name}
 
-Ex: docker stop template
+Ex: docker stop auth
 
 ### Listing all running container:
 
