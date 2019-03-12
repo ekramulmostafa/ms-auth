@@ -1,0 +1,7 @@
+[flake8]
+# If you are looking for config that is used for Jenkins builds and pre-commit hooks - see revelV2/.flake8-permissive
+
+max-line-length = 120
+exclude = ./migrations/*, node_modules/*, venv/*
+builtins = LOGDEBUG,LOGINFO,LOGWARN,LOGERR,LOGCRIT
+format = pylint
