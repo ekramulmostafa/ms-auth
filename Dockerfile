@@ -21,7 +21,7 @@ RUN venv/bin/pip install -r requirements.txt
 
 COPY app app
 COPY migrations migrations
-COPY manage.py wsgi.py .flaskenv boot.sh test.sh lint.sh .flake8 .pylint ./
+COPY manage.py wsgi.py .flaskenv boot.sh test.sh lint.sh .flake8 .pylint uwsgi.ini ./
 RUN chmod +x boot.sh
 
 RUN chown -R service:service ./
