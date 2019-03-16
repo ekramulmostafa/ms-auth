@@ -4,12 +4,12 @@ services:
   - docker:dind
 
 variables:
-  CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
+  CONTAINER_IMAGE: gitlab.bongobd.com:4567/$CI_PROJECT_PATH
   DOCKER_HOST: gitlab.bongobd.com:4567
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN gitlab.bongobd.com:4567
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $DOCKER_HOST
 
 build:
   stage: build
