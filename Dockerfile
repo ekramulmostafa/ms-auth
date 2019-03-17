@@ -28,4 +28,4 @@ RUN chown -R service:service ./
 USER service
 
 EXPOSE 5000
-ENTRYPOINT ["./boot.sh"]
+ENTRYPOINT []
