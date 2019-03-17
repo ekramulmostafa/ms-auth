@@ -4,8 +4,8 @@ services:
   - docker:dind
 
 variables:
-  CONTAINER_IMAGE: gitlab.bongobd.com:4567/$CI_PROJECT_PATH
-  DOCKER_HOST: gitlab.bongobd.com:4567
+  CONTAINER_IMAGE: https://gitlab.bongobd.com:4567/$CI_PROJECT_PATH
+  DOCKER_HOST: https://gitlab.bongobd.com:4567
   DOCKER_DRIVER: overlay2
 
 before_script:
