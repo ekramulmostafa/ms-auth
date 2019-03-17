@@ -19,5 +19,5 @@ build:
 test:
   stage: test
   script:
-    - docker run $CI_REGISTRY_IMAGE:latest ./lint.sh
-    - docker run $CI_REGISTRY_IMAGE:latest ./test.sh
+    - docker run --entry-point "./lint.sh" $CI_REGISTRY_IMAGE:latest
+    - docker run --entrypoint "./test.sh" $CI_REGISTRY_IMAGE:latest
