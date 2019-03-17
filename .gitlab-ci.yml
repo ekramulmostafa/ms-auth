@@ -9,7 +9,7 @@ variables:
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - echo "$CI_JOB_TOKEN" | docker login $DOCKER_HOST -u gitlab-ci-token --password-stdin
+  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $DOCKER_HOST
 
 build:
   stage: build
