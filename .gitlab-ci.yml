@@ -4,16 +4,14 @@ services:
   - docker:dind
 
 variables:
-  CONTAINER_IMAGE: gitlab.bongobd.com:4567/$CI_PROJECT_PATH
-  DOCKER_HOST: gitlab.bongobd.com:4567
   DOCKER_DRIVER: overlay2
 
 before_script:
-  - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $DOCKER_HOST
+  - docker login $CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN
 
 build:
   stage: build
   script:
-    - docker pull $CONTAINER_IMAGE:latest || true
-    - docker build --cache-from $CONTAINER_IMAGE:latest --tag $CONTAINER_IMAGE:$CI_COMMIT_SHA --tag $CONTAINER_IMAGE:latest .
-    - docker push $CONTAINER_IMAGE:latest
+    - docker pull $CI_REGISTRY_IMAGE:latest || true
+    - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
+    - docker push $CI_REGISTRY_IMAGE:latest
