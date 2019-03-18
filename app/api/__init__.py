@@ -3,6 +3,7 @@ from flask import Blueprint
 from flask_restplus import Api
 
 from .sample import api as sample
+from .permission import api as permission
 
 
 blueprint_api = Blueprint('api', __name__, url_prefix='/v1')
@@ -15,3 +16,4 @@ api = Api(
 )
 
 api.add_namespace(sample)
+api.add_namespace(permission)
