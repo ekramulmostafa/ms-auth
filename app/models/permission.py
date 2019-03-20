@@ -6,6 +6,7 @@ from sqlalchemy import inspect
 from sqlalchemy.dialects.postgresql import UUID
 from . import db, ma
 
+
 class PermissionModel(db.Model):
     """ permission table model """
     __tablename__ = 'permissions'
@@ -30,7 +31,6 @@ class PermissionModel(db.Model):
         db.session.add(self)
         if commit is True:
             db.session.commit()
-        
 
     def get_permission(self, **kwargs):
         """ this is common method for returing list of permission including filter & search"""

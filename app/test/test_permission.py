@@ -1,7 +1,7 @@
 """ Test permission api"""
-from base import BaseTestCase
 import unittest
 import json
+from base import BaseTestCase
 
 
 class PemissionTests(BaseTestCase):
@@ -29,10 +29,10 @@ class PemissionTests(BaseTestCase):
         if response.status_code == 200:
             self.assertEqual(response.status_code, 200, msg='tested man! chill out man!!')
         elif response.status_code == 500:
-            self.assertEqual(response.status_code, 500, msg='data exists man! so what ? chill out man!!')
+            self.assertEqual(response.status_code, 500, msg='data exists man!')
         else:
             self.assertEqual(response.status_code, 400,
-                             msg='Validation failed man! so what ? chill out man, it is just 400 response!!')
+                             msg='Validation failed! it is just 400 response!!')
 
     def test_put(self):
         """ test put call"""
@@ -46,10 +46,10 @@ class PemissionTests(BaseTestCase):
         if response.status_code == 200:
             self.ssertEqual(response.status_code, 200, msg='tested man! chill out man!!')
         elif response.status_code == 500:
-            self.assertEqual(response.status_code, 500, msg='data exists man! so what ? chill out man!!')
+            self.assertEqual(response.status_code, 500, msg='data exists!!')
         else:
             self.assertEqual(response.status_code, 400,
-                             msg='Validation failed man! so what ? chill out man, it is just 400 response!!')
+                             msg='Validation failed, it is just 400 response!!')
 
 
 if __name__ == "__main__":
