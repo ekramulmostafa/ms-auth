@@ -60,5 +60,4 @@ class PermissionDetail(Resource):
         if error:
             return error, 400
         permission_data.save()
-
-        return {'status': 'success', 'data': permission_schema.dump(permission_data)}, 200
+        return {'status': 'success', 'data': permission_schema.dump(permission_data).data}, 200
