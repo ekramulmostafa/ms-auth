@@ -39,26 +39,29 @@ class PermissionModel(db.Model):
         orderBy = kwargs.get('order_by', 'asc')
         limit = kwargs.get('limit', 10)
         offset = kwargs.get('offset', 0)
-        filter = {}  # {'active' : True}
+        filterBy = {}
         # check whether there is filtering option for that
         mapper = inspect(PermissionModel)
         for column in mapper.attrs:
             if kwargs.get(column.key):
-                filter[column.key] = kwargs.get(column.key)
+                filterBy[column.key] = kwargs.get(column.key)
 
         allPermission = PermissionModel.query
         if search:
-            result = allPermission.filter(or_(PermissionModel.name.like('%'+search+'%'), PermissionModel.code.like(
-                '%'+search+'%'))).order_by(desc(getattr(PermissionModel, sortBy))).offset(offset).limit(limit).all()
-        elif filter:
-            result = allPermission.filter_by(**filter).offset(offset).limit(limit).all()
+            result = allPermission.filter(
+                or_(PermissionModel.name.like('%'+search+'%'), PermissionModel.code.like(
+                    '%'+search+'%'))).order_by(desc(getattr(PermissionModel, sortBy))
+                                               ).offset(offset).limit(limit).all()
+        elif filterBy:
+            result = allPermission.filter_by(**filterBy).offset(offset).limit(limit).all()
         # this will sort by field name either asc or desc
         elif sortBy:
             if orderBy == 'desc':
                 result = allPermission.order_by(desc(getattr(PermissionModel, sortBy))
                                                 ).offset(offset).limit(limit).all()
             else:
-                result = allPermission.order_by(asc(getattr(PermissionModel, sortBy))).offset(offset).limit(limit).all()
+                result = allPermission.order_by(asc(getattr(PermissionModel, sortBy))
+                                                ).offset(offset).limit(limit).all()
         else:
             result = allPermission.offset(offset).limit(limit).all()
         return result

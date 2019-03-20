@@ -1,7 +1,7 @@
 """ Test permission api"""
 import unittest
 import json
-from base import BaseTestCase
+from app.test.base import BaseTestCase
 
 
 class PemissionTests(BaseTestCase):

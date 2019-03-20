@@ -1,6 +1,5 @@
 """ Base Test Class"""
 from flask_testing import TestCase
-# from app.models import db
 from manage import app
 
 
