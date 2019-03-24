@@ -27,10 +27,10 @@ class PemissionTests(BaseTestCase):
             content_type='application/json'
         )
         json_response = json.loads(response.get_data(as_text=True))
-        putId = json_response['data']['id']
+        put_id = json_response['data']['id']
         self.assert200(response)
         response = self.client.put(
-            '/v1/permission/'+putId+'/',
+            '/v1/permission/'+put_id+'/',
             data=json.dumps(dict(
                 active=True
             )),
