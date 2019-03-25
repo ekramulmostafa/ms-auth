@@ -53,10 +53,11 @@ class PermissionDetail(Resource):
         if not permission_info:
             return {'status': 'failed', "result": "Permission uuid is not valid!"}, 400
         json_data = request.get_json()
-        json_data['id'] = uuid
         if not json_data:
             return {'status': 'failed', "result":  "No data to update"}, 400
-        permission_data, error = permission_schema.load(json_data, partial=True)
+        permission_data, error = permission_schema.load(
+            json_data, instance=permission_info, partial=True
+        )
         if error:
             return error, 400
         permission_data.save()
