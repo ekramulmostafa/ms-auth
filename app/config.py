@@ -10,7 +10,7 @@ class Config:
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://postgres:12345678@localhost:5433/ms-template'
+        'postgresql://postgres:12345678@localhost:5433/ms-auth'
     )
 
 
@@ -26,6 +26,11 @@ class TestingConfig(Config):
     TESTING = True
     PRESERVE_CONTEXT_ON_EXCEPTION = False
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        'DATABASE_URL',
+        'postgresql://postgres:12345678@localhost:5433/ms-auth'
+    )
+    SQLALCHEMY_DATABASE_URI = '{}-test'.format(SQLALCHEMY_DATABASE_URI)
 
 
 class StagingConfig(Config):
