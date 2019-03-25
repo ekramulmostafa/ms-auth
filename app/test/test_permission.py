@@ -56,6 +56,11 @@ class PemissionTests(BaseTestCase):
             content_type='application/json'
         )
         self.assert200(response)
+        response = self.client.get(
+            '/v1/permission/'+put_id+'/',
+            content_type='application/json'
+        )
+        self.assert200(response)
 
 
 if __name__ == "__main__":
