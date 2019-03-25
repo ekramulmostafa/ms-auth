@@ -40,7 +40,8 @@ Ex: docker build -t auth:latest .
 
 docker run -e ENV_VARS="{Value}" --name {service-name} -d -p {mapped-port}:5000 --rm {image-name}:{version} ./boot.sh
 
-Ex: docker run -e DATABASE_URL='postgresql://postgres:12345678@host.docker.internal:5433/ms-auth' --name auth -d -p 8000:5000 --rm auth:latest ./boot.sh
+Ex: 
+docker run -e DATABASE_URL='postgresql://postgres:12345678@host.docker.internal:5433/ms-auth' --name auth -d -p 8000:5000 --rm auth:latest ./boot.sh
 
 This will run the service on:
 http://localhost:8000/
@@ -48,7 +49,7 @@ http://localhost:8000/
 ### Run test:
 docker run --entry-point "./test.sh" --name {service-name} --rm {image-name}:{version} ./test.sh
 Ex:
-docker run --name auth-test --rm auth:latest ./test.sh
+docker run -e DATABASE_URL='postgresql://postgres:12345678@host.docker.internal:5433/ms-auth' --name auth-test --rm auth:latest ./test.sh
 
 ### Run lint test:
 docker run --entry-point "./lint.sh" --name {service-name} --rm {image-name}:{version} ./lint.sh

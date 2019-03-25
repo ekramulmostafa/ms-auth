@@ -10,13 +10,13 @@ samples_schema = SampleSchema(many=True)
 
 
 @api.route('/')
-class SampleList(Resource):
+class List(Resource):
     """Sample list functionalities."""
     def get(self):
         """GET for Sample API"""
         all_samples = Sample.query.all()
         result = samples_schema.dump(all_samples)
-        return jsonify(result.data)
+        return jsonify({'meta': {}, 'objects': result.data})
 
     def post(self):
         """POST for Sample API"""
@@ -29,12 +29,12 @@ class SampleList(Resource):
             return errors, 422
         sample.save()
         result = sample_schema.dump(sample).data
-        return {'status': 'success', 'data': result}, 201
+        return result, 201
 
 
 @api.route('/<uuid:uuid>/')
 @api.response(404, 'Sample not found')
-class SampleDetail(Resource):
+class Detail(Resource):
     """Sample details functionalities."""
     def get(self, uuid):
         """GET for Sample API Details"""
