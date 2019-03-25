@@ -8,9 +8,28 @@ class PemissionTests(BaseTestCase):
     """ Permission Test api class"""
 
     def test_get(self):
-        """ smaple get call"""
+        """ Permission get call
+        Permission search call
+        Permission filter call
+        Permission limit & offset
+        """
         response = self.client.get(
             '/v1/permission',
+            content_type='application/json'
+        )
+        self.assert200(response)
+        response = self.client.get(
+            '/v1/permission?search=cssfdf',
+            content_type='application/json'
+        )
+        self.assert200(response)
+        response = self.client.get(
+            '/v1/permission?active=true',
+            content_type='application/json'
+        )
+        self.assert200(response)
+        response = self.client.get(
+            '/v1/permission?limit=1&offset=1',
             content_type='application/json'
         )
         self.assert200(response)

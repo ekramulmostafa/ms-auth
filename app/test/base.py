@@ -1,6 +1,7 @@
 """ Base Test Class"""
 from flask_testing import TestCase
 from manage import app
+from app.models import db
 
 
 class BaseTestCase(TestCase):
@@ -12,7 +13,9 @@ class BaseTestCase(TestCase):
         return app
 
     def setUp(self):
-        pass
+        db.create_all()
+        db.session.commit()
 
     def tearDown(self):
-        pass
+        db.session.remove()
+        db.drop_all()
