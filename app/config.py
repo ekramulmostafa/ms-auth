@@ -30,7 +30,7 @@ class TestingConfig(Config):
         'DATABASE_URL',
         'postgresql://postgres:12345678@localhost:5433/ms-auth'
     )
-    SQLALCHEMY_DATABASE_URI = '{}test'.format(SQLALCHEMY_DATABASE_URI)
+    SQLALCHEMY_DATABASE_URI = '{}-test'.format(SQLALCHEMY_DATABASE_URI)
 
 
 class StagingConfig(Config):
