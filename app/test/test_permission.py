@@ -1,11 +1,19 @@
 """ Test permission api"""
-import unittest
 import json
-from app.test.base import BaseTestCase
+from app.test import BaseTest
+from app.models.permission import PermissionModel, PermissionSchema
 
 
-class PemissionTests(BaseTestCase):
+class PemissionTests(BaseTest):
     """ Permission Test api class"""
+    def setUp(self):
+        super().setUp()
+        obj = PermissionModel(code='codeStr0159',
+                name='codeStr0159',
+                active=True)
+        obj.save()
+        schema_response = PermissionSchema().jsonify(obj)
+        self.permission_data = schema_response.json
 
     def test_get(self):
         """ Permission get call
@@ -39,8 +47,8 @@ class PemissionTests(BaseTestCase):
         response = self.client.post(
             '/v1/permission',
             data=json.dumps(dict(
-                code='codeStr0159',
-                name='codeStr0159',
+                code='codeStr0160',
+                name='codeStr0160cle',
                 active=True
             )),
             content_type='application/json'
@@ -61,7 +69,3 @@ class PemissionTests(BaseTestCase):
             content_type='application/json'
         )
         self.assert200(response)
-
-
-if __name__ == "__main__":
-    unittest.main()

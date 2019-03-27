@@ -1,6 +1,4 @@
 """Test configuration."""
-import unittest
-# import json
 from flask import current_app
 from flask_testing import TestCase
 
@@ -60,7 +58,3 @@ class TestProductionConfig(TestCase):
         """test config related to prod profile."""
         self.assertFalse(app.config['DEBUG'])
         self.assertFalse(app.config['TESTING'])
-
-
-if __name__ == '__main__':
-    unittest.main()

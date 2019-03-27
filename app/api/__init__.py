@@ -6,12 +6,12 @@ from .sample import api as sample
 from .permission import api as permission
 
 
-blueprint_api = Blueprint('api', __name__, url_prefix='/v1')
+blueprint_api = Blueprint('auth', __name__, url_prefix='/v1')
 api = Api(
     blueprint_api,
-    title='MS-Template API',
+    title='MS-Auth API',
     version='1.0',
-    description='This is a test service',
+    description='This is auth service',
     doc='/doc/'
 )
 
