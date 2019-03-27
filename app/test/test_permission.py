@@ -6,11 +6,12 @@ from app.models.permission import PermissionModel, PermissionSchema
 
 class PemissionTests(BaseTest):
     """ Permission Test api class"""
+
     def setUp(self):
         super().setUp()
         obj = PermissionModel(code='codeStr0159',
-                name='codeStr0159',
-                active=True)
+                              name='codeStr0159',
+                              active=True)
         obj.save()
         schema_response = PermissionSchema().jsonify(obj)
         self.permission_data = schema_response.json
