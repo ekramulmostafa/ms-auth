@@ -1,5 +1,6 @@
 """ Test permission api"""
 import json
+from flask import url_for
 from app.test import BaseTest
 from app.models.permission import PermissionModel, PermissionSchema
 
@@ -22,31 +23,40 @@ class PemissionTests(BaseTest):
         Permission filter call
         Permission limit & offset
         """
+        url = url_for('auth.permission_permission')
         response = self.client.get(
-            '/v1/permission',
+            url,
             content_type='application/json'
         )
         self.assert200(response)
+        search_var = {'search': 'cssfdf'}
+        search_url = url_for('auth.permission_permission', **search_var)
+
         response = self.client.get(
-            '/v1/permission?search=cssfdf',
+            search_url,
             content_type='application/json'
         )
         self.assert200(response)
+        active_var = {'active': True}
+        active_url = url_for('auth.permission_permission', **active_var)
         response = self.client.get(
-            '/v1/permission?active=true',
+            active_url,
             content_type='application/json'
         )
         self.assert200(response)
+        offset_var = {'limit': 1, 'offset': 1}
+        offset_url = url_for('auth.permission_permission', **offset_var)
         response = self.client.get(
-            '/v1/permission?limit=1&offset=1',
+            offset_url,
             content_type='application/json'
         )
         self.assert200(response)
 
     def test_post_and_put(self):
         """ test post call"""
+        url = url_for('auth.permission_permission')
         response = self.client.post(
-            '/v1/permission',
+            url,
             data=json.dumps(dict(
                 code='codeStr0160',
                 name='codeStr0160cle',
@@ -55,11 +65,10 @@ class PemissionTests(BaseTest):
             content_type='application/json'
         )
         json_response = json.loads(response.get_data(as_text=True))
-        put_id = json_response['data']['id']
-        # self.assert200(response)
+        put_url = url_for('auth.permission_permission_detail', uuid=json_response['data']['id'])
         self.assertEqual(response.status_code, 201)
         response = self.client.put(
-            '/v1/permission/'+put_id+'/',
+            put_url,
             data=json.dumps(dict(
                 active=True
             )),
@@ -67,7 +76,7 @@ class PemissionTests(BaseTest):
         )
         self.assert200(response)
         response = self.client.get(
-            '/v1/permission/'+put_id+'/',
+            put_url,
             content_type='application/json'
         )
         self.assert200(response)
