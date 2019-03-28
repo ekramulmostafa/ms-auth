@@ -56,7 +56,8 @@ class PemissionTests(BaseTest):
         )
         json_response = json.loads(response.get_data(as_text=True))
         put_id = json_response['data']['id']
-        self.assert200(response)
+        # self.assert200(response)
+        self.assertEqual(response.status_code, 201)
         response = self.client.put(
             '/v1/permission/'+put_id+'/',
             data=json.dumps(dict(

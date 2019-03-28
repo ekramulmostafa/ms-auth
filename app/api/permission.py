@@ -29,10 +29,10 @@ class Permission(Resource):
             return {'status': 'failed', 'result': "No json data is found"}, 400
         permission_data, error = permission_schema.load(json_data)
         if error:
-            return error, 400
+            return error, 422
         permission_data.save()
         result = permission_schema.dump(permission_data).data
-        return {'status': 'success', 'data': result}, 200
+        return {'status': 'success', 'data': result}, 201
 
 
 @api.route('/<uuid:uuid>/')
@@ -59,6 +59,6 @@ class PermissionDetail(Resource):
             json_data, instance=permission_info, partial=True
         )
         if error:
-            return error, 400
+            return error, 422
         permission_data.save()
         return {'status': 'success', 'data': permission_schema.dump(permission_data).data}, 200
