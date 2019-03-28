@@ -7,9 +7,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from . import db, ma
 
 
-class PermissionModel(db.Model):
+class Permission(db.Model):
     """ permission table model """
-    __tablename__ = 'permissions'
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(100), nullable=False)
@@ -41,26 +40,26 @@ class PermissionModel(db.Model):
         offset = kwargs.get('offset', 0)
         filter_by = {}
         # check whether there is filtering option for that
-        mapper = inspect(PermissionModel)
+        mapper = inspect(Permission)
         for column in mapper.attrs:
             if kwargs.get(column.key):
                 filter_by[column.key] = kwargs.get(column.key)
 
-        all_permission = PermissionModel.query
+        all_permission = Permission.query
         if search:
             result = all_permission.filter(
-                or_(PermissionModel.name.like('%'+search+'%'), PermissionModel.code.like(
-                    '%'+search+'%'))).order_by(desc(getattr(PermissionModel, sort_by))
+                or_(Permission.name.like('%'+search+'%'), Permission.code.like(
+                    '%'+search+'%'))).order_by(desc(getattr(Permission, sort_by))
                                                ).offset(offset).limit(limit).all()
         elif filter_by:
             result = all_permission.filter_by(**filter_by).offset(offset).limit(limit).all()
         # this will sort by field name either asc or desc
         elif sort_by:
             if order_by == 'desc':
-                result = all_permission.order_by(desc(getattr(PermissionModel, sort_by))
+                result = all_permission.order_by(desc(getattr(Permission, sort_by))
                                                  ).offset(offset).limit(limit).all()
             else:
-                result = all_permission.order_by(asc(getattr(PermissionModel, sort_by))
+                result = all_permission.order_by(asc(getattr(Permission, sort_by))
                                                  ).offset(offset).limit(limit).all()
         else:
             result = all_permission.offset(offset).limit(limit).all()
@@ -71,6 +70,6 @@ class PermissionSchema(ma.ModelSchema):
     """Permission Schema """
     class Meta:
         """ Meta class """
-        model = PermissionModel
+        model = Permission
         fields = ("id", "name", "code", "active", 'created_at', 'updated_at')
         ordered = True

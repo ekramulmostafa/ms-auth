@@ -3,7 +3,7 @@
 from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 from app.logging import Logger
-from app.models.permission import PermissionModel, PermissionSchema
+from app.models.permission import Permission, PermissionSchema
 
 
 api = Namespace('permission')
@@ -14,13 +14,13 @@ logger = Logger(__name__)
 
 
 @api.route('')
-class Permission(Resource):
+class PermissionList(Resource):
     """ Permission Resource """
 
     def get(self):
         """this api will return list of permission with filter options
         ?search=value&sort_by=field_name&limit=10&offset=0&order_by=desc/asc&field_name=value"""
-        all_permission = PermissionModel.get_permission(self, **request.args)
+        all_permission = Permission.get_permission(self, **request.args)
         result = permissions_schema.dump(all_permission)
         return jsonify({"status": "success", "data": result.data})
 
@@ -47,13 +47,13 @@ class PermissionDetail(Resource):
 
     def get(self, uuid):
         """GET permission API Details"""
-        permission = PermissionModel.query.get(uuid)
+        permission = Permission.query.get(uuid)
         result = permission_schema.dump(permission)
         return jsonify({"status": "success", "data": result.data})
 
     def put(self, uuid):
         """ update permission"""
-        permission_info = PermissionModel.query.get(uuid)
+        permission_info = Permission.query.get(uuid)
         if not permission_info:
             return {'status': 'failed', "result": "Permission uuid is not valid!"}, 400
         json_data = request.get_json()
