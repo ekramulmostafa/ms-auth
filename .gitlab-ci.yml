@@ -21,7 +21,7 @@ test:
   script:
     - docker run --name pg-con-$CI_JOB_ID -d -e POSTGRES_PASSWORD=password --rm postgres:9.6
     - docker run $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA ./lint.sh
-    - docker exec pg-con createdb -U postgres ms-auth-test
+    - docker exec pg-con-$CI_JOB_ID createdb -U postgres ms-auth-test
     - docker run -e DATABASE_URL='postgresql://postgres:password@postgres:5432/ms-auth' --link pg-con-$CI_JOB_ID:postgres $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA ./test.sh
   after_script:  
     - docker stop pg-con-$CI_JOB_ID
