@@ -1,5 +1,6 @@
 """Test configuration."""
 import os
+import logging
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -12,12 +13,14 @@ class Config:
         'DATABASE_URL',
         'postgresql://postgres:12345678@localhost:5433/ms-auth'
     )
+    LOG_LEVEL = logging.DEBUG
 
 
 class DevelopmentConfig(Config):
     """Development config."""
     DEBUG = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
+    LOG_LEVEL = logging.DEBUG
 
 
 class TestingConfig(Config):
@@ -36,11 +39,13 @@ class TestingConfig(Config):
 class StagingConfig(Config):
     """Stage config."""
     DEBUG = True
+    LOG_LEVEL = logging.WARNING
 
 
 class ProductionConfig(Config):
     """Production config."""
     DEBUG = False
+    LOG_LEVEL = logging.ERROR
 
 
 config_by_name = dict(
