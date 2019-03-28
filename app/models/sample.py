@@ -3,7 +3,6 @@ import datetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 
-
 from . import db, ma
 
 

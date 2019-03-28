@@ -3,7 +3,7 @@ from flask import Blueprint
 from flask_restplus import Api
 
 from .sample import api as sample
-
+from .role import api as role
 
 blueprint_api = Blueprint('auth', __name__, url_prefix='/v1')
 api = Api(
@@ -15,3 +15,4 @@ api = Api(
 )
 
 api.add_namespace(sample)
+api.add_namespace(role)
