@@ -2,12 +2,15 @@
 
 from flask import jsonify, request
 from flask_restplus import Namespace, Resource
+from app.logging import Logger
 from app.models.permission import PermissionModel, PermissionSchema
 
 
 api = Namespace('permission')
 permission_schema = PermissionSchema()
 permissions_schema = PermissionSchema(many=True)
+
+logger = Logger(__name__)
 
 
 @api.route('')
@@ -29,6 +32,7 @@ class Permission(Resource):
             return {'status': 'failed', 'result': "No json data is found"}, 400
         permission_data, error = permission_schema.load(json_data)
         if error:
+            logger.warning("Validation failed", data=error)
             return error, 422
         permission_data.save()
         result = permission_schema.dump(permission_data).data
@@ -59,6 +63,7 @@ class PermissionDetail(Resource):
             json_data, instance=permission_info, partial=True
         )
         if error:
+            logger.warning("Validation failed", data=error)
             return error, 422
         permission_data.save()
         return {'status': 'success', 'data': permission_schema.dump(permission_data).data}, 200
