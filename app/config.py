@@ -12,6 +12,7 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
         'postgresql://postgres:12345678@localhost:5433/ms-auth'
+
     )
     LOG_LEVEL = logging.DEBUG
 
