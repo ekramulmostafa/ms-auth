@@ -1,4 +1,7 @@
 *.pyc
 .vscode/
+.vscode*
 __pycache__/
 .coverage
+.idea*
+htmlcov*

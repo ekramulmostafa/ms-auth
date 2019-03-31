@@ -11,7 +11,7 @@ class Config:
     DEBUG = False
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://postgres:12345678@localhost:5433/ms-auth'
+        'postgresql://postgres:12345678@localhost:5432/ms-auth'
     )
     LOG_LEVEL = logging.DEBUG
 
@@ -31,7 +31,7 @@ class TestingConfig(Config):
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://postgres:12345678@localhost:5433/ms-auth'
+        'postgresql://postgres:12345678@localhost:5432/ms-auth'
     )
     SQLALCHEMY_DATABASE_URI = '{}-test'.format(SQLALCHEMY_DATABASE_URI)
 

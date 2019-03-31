@@ -9,8 +9,8 @@ import json_logging
 
 from app.config import config_by_name
 
-
 flask_bcrypt = Bcrypt()
+
 # app.app_context().push()
 
 
