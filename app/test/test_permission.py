@@ -27,7 +27,7 @@ class PemissionTests(BaseTest):
             url,
             content_type='application/json'
         )
-        self.assert200(response)
+        self.assertEqual(response.status_code, 200)
         search_var = {'search': 'cssfdf'}
         search_url = url_for('auth.permission_permission_list', **search_var)
 

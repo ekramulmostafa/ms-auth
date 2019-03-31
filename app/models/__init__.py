@@ -5,4 +5,4 @@ from flask_marshmallow import Marshmallow
 
 db = SQLAlchemy()
 ma: Marshmallow = Marshmallow()
-__all__ = ['sample', 'role']
+__all__ = ['sample']

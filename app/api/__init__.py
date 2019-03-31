@@ -1,9 +1,11 @@
 """This creates api."""
+
 from flask import Blueprint
 from flask_restplus import Api
 
 from .sample import api as sample
 from .permission import api as permission
+from .users import user_api as user
 from .role import api as role
 
 blueprint_api = Blueprint('auth', __name__, url_prefix='/v1')
@@ -17,4 +19,5 @@ api = Api(
 
 api.add_namespace(sample)
 api.add_namespace(permission)
+api.add_namespace(user)
 api.add_namespace(role)
