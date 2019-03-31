@@ -16,6 +16,7 @@ flask_bcrypt = Bcrypt()
 
 def create_app():
     """Creating flask app and setting all modeuls and config."""
+
     config = config_by_name[os.getenv('APP_SETTINGS', 'dev')]
     flask_app = Flask(__name__, static_folder=None, instance_relative_config=True)
     flask_app.config.from_object(config)
