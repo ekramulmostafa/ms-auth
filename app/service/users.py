@@ -1,12 +1,18 @@
 """User service and required helper methods"""
+import datetime
+import jwt
+import flask_bcrypt
+from flask import current_app as app
+
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
 from sqlalchemy.orm.exc import NoResultFound
 
 from app.models import db
 from app.models.users import Users
-from app.serializers.users import UsersModelSchema, UsersFilterSerializer
+from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
+
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -111,3 +117,37 @@ class UsersServices:
         result_data.save()
         response_data = user_schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
+
+    def login(self, data: dict):
+        """ user login"""
+        login_schema = UsersLoginSerializer()
+        result_data, errors = login_schema.load(data)
+        if errors:
+            return {'status': 'error', 'data': {}, 'message': errors}, 422
+
+        user = None
+        result_data_keys = list(result_data.keys())
+        if 'email' in result_data_keys:
+            user = Users.query.filter_by(email=data['email']).first()
+        elif 'phone' in result_data_keys:
+            user = Users.query.filter_by(phone=data['phone']).first()
+
+        is_correct_password = False
+        if user:
+            is_correct_password = flask_bcrypt.check_password_hash(user.password,
+                                                                   result_data['password'])
+
+        if is_correct_password:
+            payload = {
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1, seconds=5),
+                'iat': datetime.datetime.utcnow(),
+                'sub': str(user.id),
+                'roles': [str(role.id) for role in user.roles]
+            }
+            jwt_token = jwt.encode(
+                payload,
+                app.config.get('JWT_SECRET_KEY'),
+                algorithm='HS256'
+            )
+            return {'status': 'success', 'data': jwt_token.decode(), 'message': ''}, 200
+        return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400

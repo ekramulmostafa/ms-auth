@@ -49,3 +49,13 @@ class UserDetailAPI(Resource):
         """PUT for User API Update"""
         data = request.json
         return user_service.update(data['data'], uuid)
+
+
+@user_api.route('/login/')
+class UserLoginAPI(Resource):
+    """User details functionality"""
+
+    def post(self):
+        """login user"""
+        json_data = request.get_json(force=True)
+        return user_service.login(json_data['data'])

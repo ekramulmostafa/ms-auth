@@ -91,3 +91,25 @@ class UsersFilterSerializer(Schema):
         if hasattr(data, 'updated_at') or ('updated_at' in list(data.keys())):
             data['updated_at'] = data['updated_at'].date()
         return data
+
+
+class UsersLoginSerializer(Schema):
+    """User login validation"""
+
+    email = fields.Email(required=False)
+    phone = fields.String(required=False)
+    password = fields.String(required=True)
+
+    @validates('email')
+    def validate_email(self, email):
+        """validate email"""
+        user = Users.query.filter(Users.email == email).count()
+        if user < 1:
+            raise ValidationError('No registered user found with this email')
+
+    @validates('phone')
+    def validate_phone(self, phone):
+        """validate phone"""
+        user = Users.query.filter(Users.phone == phone).count()
+        if user < 1:
+            raise ValidationError('No registered user found with this phone')
