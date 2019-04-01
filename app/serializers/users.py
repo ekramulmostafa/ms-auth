@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from marshmallow import fields, post_load, validates, ValidationError, Schema
 
 from app.models import ma
+from app.models.role import RoleSchema
 from app.models.users import Users
 
 DATE_FORMAT = '%Y-%m-%d'
@@ -22,6 +23,7 @@ class UsersModelSchema(ma.ModelSchema):
     password = fields.String(load_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
+    roles = fields.Nested(RoleSchema, many=True)
 
     class Meta:
         """Meta class"""
@@ -63,6 +65,18 @@ class UsersModelSchema(ma.ModelSchema):
         difference_in_years = relativedelta(datetime.datetime.now(), birth_date).years
         if difference_in_years < age_limit:
             raise ValidationError('User should be greater than 5')
+
+    @validates('phone')
+    def validate_phone(self, phone):
+        """validate phone"""
+        user = Users.query.filter(Users.phone == phone).count()
+        if self.instance:
+            if self.instance.phone != phone:
+                if user > 0:
+                    raise ValidationError('A registered user found with this phone')
+        else:
+            if user > 0:
+                raise ValidationError('A registered user found with this phone')
 
 
 class UsersFilterSerializer(Schema):
