@@ -1,10 +1,11 @@
 """Model for Role resource"""
+from app.models.role_permission import RolePermission
 import datetime
 from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
-# from app.models.role_permission import RolePermission
+
 from . import db, ma
 
 
@@ -21,7 +22,8 @@ class Role(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
 
-    permissions = db.relationship("RolePermission", back_populates="permission")
+    role_permission = db.relationship("RolePermission", backref=db.backref("role"),
+                                      primaryjoin="Role.id == RolePermission.role_id")
 
     def __init__(self, **kwargs):
         """Initialization for role model"""
@@ -91,15 +93,17 @@ class Role(db.Model):
         return all_roles
 
 
-class RolePermission(db.Model):
-    """Description for role permission model"""
-    __tablename__ = 'role_permission'
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'))
-    permission_id = db.Column(db.Integer, db.ForeignKey('permission.id'))
+# class RolePermission(db.Model):
+#     """Description for role permission model"""
+#     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+#     role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('role.id'), primary_key=True)
+#     permission_id = db.Column(UUID(as_uuid=True), db.ForeignKey('permission.id'), primary_key=True)
 
-    role = db.relationship("Role", back_populates="permissions")
-    permissions = db.relationship("Permission", back_populates="roles")
+#     @classmethod
+#     def save(cls, role, permission):
+#         role.role_permission.append(permission)
+#         db.session.add(role)
+#         db.session.commit()
 
 
 class RoleSchema(ma.ModelSchema):
