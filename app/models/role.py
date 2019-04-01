@@ -4,7 +4,7 @@ from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
-
+from app.models.role_permission import RolePermission
 from . import db, ma
 
 
@@ -20,6 +20,9 @@ class Role(db.Model):
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    permissions = db.relationship("Permission",
+                                  secondary=RolePermission)
 
     def __init__(self, **kwargs):
         """Initialization for role model"""

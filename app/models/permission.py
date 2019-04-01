@@ -4,6 +4,7 @@ import uuid
 from sqlalchemy import desc, asc, or_
 from sqlalchemy import inspect
 from sqlalchemy.dialects.postgresql import UUID
+from app.models.role_permission import RolePermission
 from . import db, ma
 
 
@@ -18,6 +19,9 @@ class Permission(db.Model):
     updated_by = db.Column(db.String(100), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    roles = db.relationship("Role",
+                            secondary=RolePermission, backref="permissions")
 
     def __init__(self, **kwargs):
         """constructor."""
