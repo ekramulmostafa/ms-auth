@@ -32,7 +32,8 @@ class Users(db.Model):
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
 
     active = db.Column(db.Boolean, nullable=False, default=True)
-    roles = db.relationship('Role', secondary="user_role")
+    # TODO : 'roles' will be deleted after bon-104 merged
+    roles = db.relationship('Role', secondary="user_role", cascade="all, delete")
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
@@ -42,6 +43,7 @@ class Users(db.Model):
 
     def save(self, commit=True):
         """save method"""
+        # TODO : will be deleted after bon-104 merged
         self.roles.append(Role.query.first())
         db.session.add(self)
         if commit is True:
@@ -50,6 +52,7 @@ class Users(db.Model):
 
 class UserRole(db.Model):
     """temporary user role model"""
+    # TODO : will be deleted after bon-104 merged
     __tablename__ = "user_role"
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))

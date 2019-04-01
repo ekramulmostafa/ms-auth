@@ -23,6 +23,8 @@ class UsersModelSchema(ma.ModelSchema):
     password = fields.String(load_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
+
+    # TODO : will be deleted after bon-104 merged
     roles = fields.Nested(RoleSchema, many=True)
 
     class Meta:

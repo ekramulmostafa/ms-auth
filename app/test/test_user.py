@@ -9,6 +9,8 @@ from app.test import BaseTest
 
 user_service = UsersServices()
 
+# TODO : will be refactored as phone now is unique
+
 
 class UserTests(BaseTest):
     """ Test User api"""
