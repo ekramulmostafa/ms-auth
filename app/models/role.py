@@ -5,8 +5,10 @@ from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
-
+from app.models.permission import Permission, PermissionSchema
 from . import db, ma
+
+from marshmallow import fields
 
 
 class Role(db.Model):
@@ -22,8 +24,8 @@ class Role(db.Model):
     updated_at = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
 
-    role_permission = db.relationship("RolePermission", backref=db.backref("role"),
-                                      primaryjoin="Role.id == RolePermission.role_id")
+    permissions = db.relationship('Permission', secondary='role_permission',
+                                  backref=db.backref('roles'))
 
     def __init__(self, **kwargs):
         """Initialization for role model"""
@@ -35,6 +37,12 @@ class Role(db.Model):
     def save(self, commit=True):
         """Save data for role model"""
         self.updated_at = datetime.datetime.utcnow()
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def save_role_permission(self, permission, commit=True):
+        self.permissions.append(permission)
         db.session.add(self)
         if commit is True:
             db.session.commit()
@@ -108,6 +116,8 @@ class Role(db.Model):
 
 class RoleSchema(ma.ModelSchema):
     """Role model Schema"""
+    permissions = fields.Nested(PermissionSchema, many=True)
+
     class Meta:
         """Role model meta"""
         model = Role

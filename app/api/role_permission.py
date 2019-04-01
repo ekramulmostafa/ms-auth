@@ -2,13 +2,11 @@
 from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 from app.logging import Logger
-from app.models.role_permission import RolePermission, RolePermissionSchema
+from app.models.role_permission import RolePermission
 from app.models.role import Role
 from app.models.permission import Permission
 
 api = Namespace('role_permission')
-role_permission_schema = RolePermissionSchema()
-roles_Permissions_schema = RolePermissionSchema(many=True)
 
 
 logger = Logger(__name__)
@@ -23,9 +21,6 @@ class RolePermissionList(Resource):
 
         logger.info("Get all role")
         roles = RolePermission.query.all()
-
-        result = roles_Permissions_schema.dump(roles)
-        return jsonify(result.data)
 
     def post(self):
         """Insert a role"""
@@ -42,7 +37,7 @@ class RolePermissionList(Resource):
         permission = Permission.query.get(json_data['permission_id'])
         # print(permission.name)
         # RolePermission.save(role, permission)
-        role.role_permission.append(permission)
+        role.save_role_permission(permission)
 
         print('role_permission_end')
         # Validate and deserialize input
