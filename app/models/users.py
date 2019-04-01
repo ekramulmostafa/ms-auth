@@ -33,7 +33,7 @@ class Users(db.Model):
 
     active = db.Column(db.Boolean, nullable=False, default=True)
     # TODO : 'roles' will be deleted after bon-104 merged
-    roles = db.relationship('Role', secondary="user_role", cascade="all, delete")
+    roles = db.relationship('Role', secondary="user_role", backref='users', cascade="all, delete")
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
