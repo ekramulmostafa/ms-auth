@@ -163,3 +163,13 @@ class UsersServices:
             response_data = user_schema.dump(user).data
             return {'status': 'success', 'data': response_data, 'message': ''}, 200
         return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+
+    def reset_password(self, data: dict, code=None):
+        """user password reset"""
+        user = Users.query.filter_by(verification_code=code).first()
+        if user:
+            self.update({"password": data['password']}, uuid=str(user.id))
+            return {'status': 'success',
+                    'data': {},
+                    'message': 'password updated successfully'}, 200
+        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400

@@ -68,3 +68,13 @@ class UserVerificationAPI(Resource):
     def get(self, code):
         """GET for User verification"""
         return user_service.verify_user(code)
+
+
+@user_api.route('/password-reset/<string:code>/')
+class UserResetPasswordAPI(Resource):
+    """User reset password functionality"""
+
+    def post(self, code):
+        """POST for User reset password"""
+        data = request.json
+        return user_service.reset_password(data['data'], code)
