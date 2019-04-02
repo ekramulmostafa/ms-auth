@@ -5,9 +5,9 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
 
-# from app.models.role import Role
-# from app.models.permission import Permission
 from . import db, ma
+
+from marshmallow import fields
 
 
 class RolePermission(db.Model):
@@ -24,3 +24,11 @@ class RolePermission(db.Model):
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+
+class RolePermissionSchema(ma.ModelSchema):
+    """Role Permission model Schema"""
+
+    class Meta:
+        """Role Permission model meta"""
+        model = RolePermission
