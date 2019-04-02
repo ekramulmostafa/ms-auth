@@ -27,9 +27,12 @@ class Users(db.Model):
     email = db.Column(db.String(50), nullable=True)
     phone = db.Column(db.String(50), nullable=True)
     password = db.Column(db.String(130), nullable=False)
-    verification_code = db.Column(db.String(130), nullable=True)
-    status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
 
+    verification_code = db.Column(db.String(130), nullable=True)
+    verified = db.Column(db.Boolean, nullable=False, default=False)
+    verified_at = db.Column(db.DateTime, nullable=True)
+
+    status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
     active = db.Column(db.Boolean, nullable=False, default=True)
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)

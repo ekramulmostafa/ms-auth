@@ -1,6 +1,7 @@
 """User service and required helper methods"""
 
 from smtplib import SMTPException
+from datetime import datetime
 
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
@@ -149,3 +150,16 @@ class UsersServices:
                     'data': {},
                     'message': 'sending email failed'
                     }, 400
+
+    def verify_user(self, verification_code=None):
+        """user verification"""
+        user = Users.query.filter_by(verification_code=verification_code).first()
+        if user:
+            if user.verified:
+                return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
+            user.verified = True
+            user.verified_at = datetime.utcnow()
+            db.session.commit()
+            response_data = user_schema.dump(user).data
+            return {'status': 'success', 'data': response_data, 'message': ''}, 200
+        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400

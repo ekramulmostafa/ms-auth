@@ -59,3 +59,12 @@ class UserForgetPasswordAPI(Resource):
         """POST for User forget password"""
         data = request.json
         return user_service.forget_password(data['data'])
+
+
+@user_api.route('/verify/<string:code>/')
+class UserVerificationAPI(Resource):
+    """User verification functionality"""
+
+    def get(self, code):
+        """GET for User verification"""
+        return user_service.verify_user(code)
