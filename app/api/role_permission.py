@@ -55,12 +55,41 @@ class RolePermissionList(Resource):
         role.save_role_permission(permission)
 
         print('role_permission_end')
-        # Validate and deserialize input
-        # role_permission, errors = role_permission_schema.load(json_data)
-        # if errors:
-        #     logger.warning("Insert role error", data=errors)
-        #     return errors, 422
 
-        # role.save()
-        # result = role_schema.dump(role).data
-        # return {'status': 'success', 'data': result}, 201
+
+@api.route('/<uuid:uuid>')
+@api.response(404, 'Role Permission not found')
+class RoleDetail(Resource):
+    """Role Permission detail funtions written"""
+
+    def put(self, uuid):
+        """ Update role permission """
+        logger.info("Update role permission")
+
+        role_obj = RolePermission.query.get(uuid)
+        if role_obj is None:
+            return {'message': 'Role not found'}, 404
+
+        json_data = request.get_json(force=True)
+        if not json_data:
+            return {'message': 'No input data provided'}, 400
+
+        role_permission, errors = role_permission_schema.load(json_data, instance=role_obj, partial=True)
+        if errors:
+            logger.warning("Update role error", data=errors)
+            return errors, 422
+        # print(role)
+        role_permission.save()
+        result = role_permission_schema.dump(role_permission).data
+        return {'status': 'success', 'data': result}, 200
+
+    def delete(self, uuid):
+        """ delete role permission """
+        logger.info("delete role permission")
+
+        role_obj = RolePermission.query.get(uuid)
+        if role_obj is None:
+            return {'message': 'Role not found'}, 404
+
+        role_obj.delete()
+        return {'status': 'successfully deleted'}, 200

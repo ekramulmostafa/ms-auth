@@ -13,9 +13,13 @@ from marshmallow import fields
 class RolePermission(db.Model):
     """Description for role permission model"""
     __tablename__ = 'role_permission'
+    __table_args__ = (
+        db.UniqueConstraint('role_id', 'permission_id', name='unique_role_permission'),
+    )
+
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('role.id'), primary_key=True)
-    permission_id = db.Column(UUID(as_uuid=True), db.ForeignKey('permission.id'), primary_key=True)
+    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('role.id'))
+    permission_id = db.Column(UUID(as_uuid=True), db.ForeignKey('permission.id'))
 
     status = db.Column(db.Boolean(), nullable=False, default=True)
     created_by = db.Column(db.String(100), nullable=False, default='10101010101')
@@ -24,6 +28,19 @@ class RolePermission(db.Model):
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    def save(self, commit=True):
+        """Save data for role model"""
+        self.updated_at = datetime.datetime.utcnow()
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def delete(self, commit=True):
+        """Delete data for role permission model"""
+        db.session.delete(self)
+        if commit is True:
+            db.session.commit()
 
 
 class RolePermissionSchema(ma.ModelSchema):
