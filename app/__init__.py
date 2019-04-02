@@ -6,7 +6,6 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_bcrypt import Bcrypt
 import json_logging
-from flask_mail import Mail, Message
 
 from app.config import config_by_name
 

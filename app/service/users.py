@@ -1,14 +1,18 @@
 """User service and required helper methods"""
-from flask_mail import Message
+
+from smtplib import SMTPException
+
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
 from sqlalchemy.orm.exc import NoResultFound
+
+from flask import current_app as app
 
 from app.models import db
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer
 from app.logging import Logger
-from app.service import mail
+from app.utils.utils import send_email, generate_random_string
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -114,12 +118,34 @@ class UsersServices:
         response_data = user_schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
 
-    def email(self, data: dict):
-        """specific User update"""
-        msg = Message(subject="Hello",
-                      sender='rifat.tauwab@bongobd.com',
-                      recipients=[data['email']],  # replace with your email for testing
-                      body="This is a test email I sent with Gmail and Python!")
-        mail.send(msg)
+    def forget_password(self, data: dict):
+        """forget password"""
+        user = None
+        result_data_keys = list(data.keys())
+        if 'email' in result_data_keys:
+            user = Users.query.filter_by(email=data['email']).first()
+        elif 'phone' in result_data_keys:
+            user = Users.query.filter_by(phone=data['phone']).first()
 
-        return {'status': 'success', 'data': 'sent', 'message': ''}, 200
+        if not user:
+            return {'status': 'success', 'data': {}, 'message': 'No User found'}, 400
+
+        password = generate_random_string()
+        email_data = {
+            "subject": "Forget Password",
+            "sender": app.config.get('MAIL_USERNAME'),
+            "recipients": [user.email],
+            "body": "your temporary password {0}".format(password)
+        }
+        try:
+            send_email(email_data)
+            self.update({"password": password}, uuid=str(user.id))
+            return {'status': 'success',
+                    'data': {},
+                    'message': 'A temporary password has been sent to email address'
+                    }, 200
+        except SMTPException:
+            return {'status': 'success',
+                    'data': {},
+                    'message': 'sending email failed'
+                    }, 400

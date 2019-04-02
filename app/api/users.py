@@ -51,11 +51,11 @@ class UserDetailAPI(Resource):
         return user_service.update(data['data'], uuid)
 
 
-@user_api.route('/email/')
-class UserEmailAPI(Resource):
-    """User details functionality"""
+@user_api.route('/forget-password/')
+class UserForgetPasswordAPI(Resource):
+    """User forget password functionality"""
 
     def post(self):
-        """PUT for User API Update"""
+        """POST for User forget password"""
         data = request.json
-        return user_service.email(data['data'])
+        return user_service.forget_password(data['data'])
