@@ -23,14 +23,14 @@ class RolePermissionList(Resource):
         """Get all role"""
 
         logger.info("Get all role")
-        roles = RolePermission.query.all()
+        role_permissions = RolePermission.query.all()
         # roles = roles_permissions_schema.dump(roles).data
 
-        roles_schema = roles_permissions_schema.dump(roles).data
+        roles_schema = roles_permissions_schema.dump(role_permissions).data
         i = 0
-        for role in roles:
-            temprole = Role.query.get(role.role_id)
-            temppermission = Permission.query.get(role.permission_id)
+        for role_permission in role_permissions:
+            temprole = Role.query.get(role_permission.role_id)
+            temppermission = Permission.query.get(role_permission.permission_id)
 
             roles_schema[i]['role_name'] = str(temprole.name)
             roles_schema[i]['permission_name'] = str(temppermission.name)
