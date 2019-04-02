@@ -6,6 +6,7 @@ from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager
 from flask_bcrypt import Bcrypt
 import json_logging
+from flask_mail import Mail, Message
 
 from app.config import config_by_name
 
@@ -28,6 +29,9 @@ def create_app():
         Migrate(flask_app, db)
         app_manager.add_command('db', MigrateCommand)
         ma.init_app(flask_app)
+
+        from app.service import mail
+        mail.init_app(flask_app)
 
         from app.api import blueprint_api
         flask_app.register_blueprint(blueprint_api)

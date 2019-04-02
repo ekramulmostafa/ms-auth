@@ -49,3 +49,13 @@ class UserDetailAPI(Resource):
         """PUT for User API Update"""
         data = request.json
         return user_service.update(data['data'], uuid)
+
+
+@user_api.route('/email/')
+class UserEmailAPI(Resource):
+    """User details functionality"""
+
+    def post(self):
+        """PUT for User API Update"""
+        data = request.json
+        return user_service.email(data['data'])

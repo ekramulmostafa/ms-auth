@@ -1,4 +1,5 @@
 """User service and required helper methods"""
+from flask_mail import Message
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
 from sqlalchemy.orm.exc import NoResultFound
@@ -7,6 +8,7 @@ from app.models import db
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer
 from app.logging import Logger
+from app.service import mail
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -111,3 +113,13 @@ class UsersServices:
         result_data.save()
         response_data = user_schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
+
+    def email(self, data: dict):
+        """specific User update"""
+        msg = Message(subject="Hello",
+                      sender='rifat.tauwab@bongobd.com',
+                      recipients=[data['email']],  # replace with your email for testing
+                      body="This is a test email I sent with Gmail and Python!")
+        mail.send(msg)
+
+        return {'status': 'success', 'data': 'sent', 'message': ''}, 200
