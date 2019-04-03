@@ -58,13 +58,28 @@ class RolePermissionList(Resource):
         role_permission.save_data()
 
         result = rp_schema.dump(role_permission).data
-        return {'status': 'success', 'data': result}, 200
+        return {'status': 'success', 'data': result}, 201
 
 
 @api.route('/<uuid:role_id>/<uuid:permission_id>')
 @api.response(404, 'Role Permission not found')
-class RoleDetail(Resource):
+class RolePermissionDetail(Resource):
     """Role Permission detail funtions written"""
+
+    def get(self, role_id, permission_id):
+        """ GET role permission """
+        logger.info("GET role permission")
+
+        role_obj = RolePermission.get_by_role_permission(role_id, permission_id)
+        if role_obj is None:
+            return {'message': 'Role Permission not found'}, 404
+
+        role_permission, errors = rp_schema.dump(role_obj).data
+        if errors:
+            logger.warning("Get role permission error", data=errors)
+            return errors, 422
+
+        return {'status': 'success', 'data': role_permission}, 200
 
     def put(self, role_id, permission_id):
         """ Update role permission """
