@@ -1,10 +1,11 @@
 """User service and required helper methods"""
+
+from smtplib import SMTPException
+from datetime import datetime, timedelta
 import jwt
 import flask_bcrypt
 from flask import current_app as app
 
-from smtplib import SMTPException
-from datetime import datetime, timedelta
 
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
@@ -14,8 +15,7 @@ from app.models import db
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
-from app.utils.utils import send_email, generate_random_string
-
+from app.utils.utils import send_email, generate_random_string, decode_auth_token
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -213,3 +213,13 @@ class UsersServices:
                     'data': {},
                     'message': 'password updated successfully'}, 200
         return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+
+    def get_user_from_token(self, token=None):
+        """
+        get user from token
+        response : object
+        """
+        token = token.split(' ')[1]
+        jwt_resp = decode_auth_token(token)['data']
+        user = Users.query.filter_by(id=jwt_resp['sub']).first()
+        return user

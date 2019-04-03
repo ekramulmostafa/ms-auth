@@ -1,10 +1,11 @@
 """User API"""
 
-from flask import request
+from flask import request, session
 from flask_restplus import Namespace, Resource
 
 from app.models.users import Users
 from app.service.users import UsersServices
+from app.utils.decorator import token_required
 
 user_api = Namespace('user')
 user_service = UsersServices()
@@ -74,7 +75,6 @@ class UserForgetPasswordAPI(Resource):
 @user_api.route('/verify/<string:code>/')
 class UserVerificationAPI(Resource):
     """User verification functionality"""
-
     def get(self, code):
         """GET for User verification"""
         return user_service.verify_user(code)
@@ -89,3 +89,12 @@ class UserResetPasswordAPI(Resource):
         data = request.json
         return user_service.reset_password(data['data'], code)
 
+
+@user_api.route('/current-user/')
+class CurrentUserAPI(Resource):
+    """User verification functionality"""
+    @token_required
+    def get(self):
+        """GET for User verification"""
+        user = session.pop('current_user', None)
+        return user_service.get_user_details(uuid=str(user.id))

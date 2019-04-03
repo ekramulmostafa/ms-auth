@@ -3,8 +3,9 @@
 import random
 import string
 
-
+import jwt
 from flask_mail import Message
+from flask import current_app as app
 
 from app.service import mail
 
@@ -22,3 +23,14 @@ DEFAULT_CHAR_STRING = string.ascii_uppercase+string.ascii_lowercase + string.dig
 def generate_random_string(chars=DEFAULT_CHAR_STRING, size=6):
     """generate random 6 character string"""
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def decode_auth_token(auth_token):
+    """Decodes the auth token"""
+    try:
+        payload = jwt.decode(auth_token, app.config.get('JWT_SECRET_KEY'))
+        return {'status': 'success', 'data': payload, 'message': ''}
+    except jwt.ExpiredSignatureError:
+        return {'status': 'error', 'data': {}, 'message': 'token expired'}
+    except jwt.InvalidTokenError:
+        return {'status': 'error', 'data': {}, 'message': 'invalid token'}
