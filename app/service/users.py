@@ -131,19 +131,19 @@ class UsersServices:
         if not user:
             return {'status': 'success', 'data': {}, 'message': 'No User found'}, 400
 
-        password = generate_random_string()
+        reset_code = generate_random_string()
         email_data = {
             "subject": "Forget Password",
             "sender": app.config.get('MAIL_USERNAME'),
             "recipients": [user.email],
-            "body": "your temporary password {0}".format(password)
+            "body": "your password reset code {0}".format(reset_code)
         }
         try:
             send_email(email_data)
-            self.update({"password": password}, uuid=str(user.id))
+            self.update({"verification_code": reset_code}, uuid=str(user.id))
             return {'status': 'success',
                     'data': {},
-                    'message': 'A temporary password has been sent to email address'
+                    'message': 'A password reset code has been sent to email address'
                     }, 200
         except SMTPException:
             return {'status': 'success',
@@ -159,6 +159,7 @@ class UsersServices:
                 return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
             user.verified = True
             user.verified_at = datetime.utcnow()
+            user.verification_code = None
             db.session.commit()
             response_data = user_schema.dump(user).data
             return {'status': 'success', 'data': response_data, 'message': ''}, 200
@@ -168,7 +169,10 @@ class UsersServices:
         """user password reset"""
         user = Users.query.filter_by(verification_code=code).first()
         if user:
-            self.update({"password": data['password']}, uuid=str(user.id))
+            self.update({
+                "password": data['password'],
+                "verification_code": None
+            }, uuid=str(user.id))
             return {'status': 'success',
                     'data': {},
                     'message': 'password updated successfully'}, 200
