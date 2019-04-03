@@ -1,14 +1,13 @@
 """Model for Role resource"""
-from app.models.role_permission import RolePermission
 import datetime
 from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
-from app.models.permission import Permission, PermissionSchema
-from . import db, ma
-
 from marshmallow import fields
+from app.models.permission import PermissionSchema
+from app.models.role_permission import RolePermission
+from . import db, ma
 
 
 class Role(db.Model):
@@ -19,12 +18,10 @@ class Role(db.Model):
     active = db.Column(db.Boolean(), nullable=False, default=True)
     created_by = db.Column(db.String(100), nullable=False)
     updated_by = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
 
-    permissions = db.relationship('Permission', secondary='role_permission',
+    permissions = db.relationship('Permission', secondary=RolePermission.__tablename__,
                                   backref=db.backref('roles'))
 
     def __init__(self, **kwargs):
@@ -42,6 +39,7 @@ class Role(db.Model):
             db.session.commit()
 
     def save_role_permission(self, permission, commit=True):
+        """Relationship between role and permission"""
         self.permissions.append(permission)
         db.session.add(self)
         if commit is True:
@@ -99,19 +97,6 @@ class Role(db.Model):
             else:
                 all_roles = all_roles.order_by(Role.id)
         return all_roles
-
-
-# class RolePermission(db.Model):
-#     """Description for role permission model"""
-#     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-#     role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('role.id'), primary_key=True)
-#     permission_id = db.Column(UUID(as_uuid=True), db.ForeignKey('permission.id'), primary_key=True)
-
-#     @classmethod
-#     def save(cls, role, permission):
-#         role.role_permission.append(permission)
-#         db.session.add(role)
-#         db.session.commit()
 
 
 class RoleSchema(ma.ModelSchema):
