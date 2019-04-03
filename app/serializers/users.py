@@ -21,6 +21,8 @@ class UsersModelSchema(ma.ModelSchema):
     birth_date = fields.Date(DATE_FORMAT)
     email = fields.Email(required=True)
     password = fields.String(load_only=True)
+    verified = fields.Boolean(dump_only=True)
+    verified_at = fields.DateTime(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
 

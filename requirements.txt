@@ -22,4 +22,5 @@ requests==2.21.0
 json-logging==0.0.12
 SQLAlchemy-Utils==0.33.11
 PyJWT==1.7.1
+Flask-Mail==0.9.1
 

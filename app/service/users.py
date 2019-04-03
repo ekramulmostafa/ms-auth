@@ -4,6 +4,9 @@ import jwt
 import flask_bcrypt
 from flask import current_app as app
 
+from smtplib import SMTPException
+from datetime import datetime
+
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
 from sqlalchemy.orm.exc import NoResultFound
@@ -12,6 +15,7 @@ from app.models import db
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
+from app.utils.utils import send_email, generate_random_string
 
 
 user_schema = UsersModelSchema()
@@ -151,3 +155,62 @@ class UsersServices:
             )
             return {'status': 'success', 'data': jwt_token.decode(), 'message': ''}, 200
         return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
+
+    def forget_password(self, data: dict):
+        """forget password"""
+        user = None
+        result_data_keys = list(data.keys())
+        if 'email' in result_data_keys:
+            user = Users.query.filter_by(email=data['email']).first()
+        elif 'phone' in result_data_keys:
+            user = Users.query.filter_by(phone=data['phone']).first()
+
+        if not user:
+            return {'status': 'success', 'data': {}, 'message': 'No User found'}, 400
+
+        reset_code = generate_random_string()
+        email_data = {
+            "subject": "Forget Password",
+            "sender": app.config.get('MAIL_USERNAME'),
+            "recipients": [user.email],
+            "body": "your password reset code {0}".format(reset_code)
+        }
+        try:
+            send_email(email_data)
+            self.update({"verification_code": reset_code}, uuid=str(user.id))
+            return {'status': 'success',
+                    'data': {},
+                    'message': 'A password reset code has been sent to email address'
+                    }, 200
+        except SMTPException:
+            return {'status': 'success',
+                    'data': {},
+                    'message': 'sending email failed'
+                    }, 400
+
+    def verify_user(self, verification_code=None):
+        """user verification"""
+        user = Users.query.filter_by(verification_code=verification_code).first()
+        if user:
+            if user.verified:
+                return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
+            user.verified = True
+            user.verified_at = datetime.utcnow()
+            user.verification_code = None
+            db.session.commit()
+            response_data = user_schema.dump(user).data
+            return {'status': 'success', 'data': response_data, 'message': ''}, 200
+        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+
+    def reset_password(self, data: dict, code=None):
+        """user password reset"""
+        user = Users.query.filter_by(verification_code=code).first()
+        if user:
+            self.update({
+                "password": data['password'],
+                "verification_code": None
+            }, uuid=str(user.id))
+            return {'status': 'success',
+                    'data': {},
+                    'message': 'password updated successfully'}, 200
+        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
