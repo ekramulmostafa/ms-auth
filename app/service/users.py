@@ -1,11 +1,10 @@
 """User service and required helper methods"""
-import datetime
 import jwt
 import flask_bcrypt
 from flask import current_app as app
 
 from smtplib import SMTPException
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
@@ -143,8 +142,8 @@ class UsersServices:
 
         if is_correct_password:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=1, seconds=5),
-                'iat': datetime.datetime.utcnow(),
+                'exp': datetime.utcnow() + timedelta(days=1, seconds=5),
+                'iat': datetime.utcnow(),
                 'sub': str(user.id),
                 'roles': [str(role.id) for role in user.roles]
             }
