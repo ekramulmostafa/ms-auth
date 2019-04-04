@@ -26,8 +26,8 @@ class UserRole(Resource):
         result_data, error = user_role_schema.load(data)
         if error:
             return error, 422
-        result = result_data.save()
-        user_role = user_role_schema.dump(result).data
+        result_data.save()
+        user_role = user_role_schema.dump(result_data).data
         return {'status': 'success', 'result': user_role}, 200
 
     def put(self):

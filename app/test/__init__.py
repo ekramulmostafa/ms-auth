@@ -7,6 +7,7 @@ from app.models import db
 
 class BaseTest(TestCase):
     """Test dev releted test cases."""
+
     def create_app(self):
         """Create app."""
         app.config.from_object('app.config.TestingConfig')

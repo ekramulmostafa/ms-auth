@@ -24,7 +24,7 @@ class UserRole(db.Model):
     def __init__(self, **arg):
         """ User role cobstructor """
         self.role_id = arg.get('role_id')
-        self.user_id = arg.get('users_id')
+        self.user_id = arg.get('user_id')
         self.active = arg.get('active')
 
     def save(self, commit=True):
