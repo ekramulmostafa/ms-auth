@@ -92,10 +92,10 @@ class UserResetPasswordAPI(Resource):
 
 @user_api.route('/current-user/')
 class CurrentUserAPI(Resource):
-    """User verification functionality"""
+    """Current User functionality"""
     @token_required
     def get(self):
-        """GET for User verification"""
+        """GET for current user"""
         user = session.pop('current_user', None)
         return user_service.get_user_details(uuid=str(user.id))
 
@@ -106,3 +106,14 @@ class CurrentUserAPI(Resource):
         user = session.pop('current_user', None)
         data['data']['updated_by'] = user.id
         return user_service.update(data['data'], uuid=str(user.id))
+
+
+@user_api.route('/current-user/update-password/')
+class CurrentUserUpdatePasswordAPI(Resource):
+    """Current User only password update functionality"""
+    @token_required
+    def put(self):
+        """PUT for Current User API Update"""
+        data = request.json
+        user = session.pop('current_user', None)
+        return user_service.update_password(data['data'], user=user)

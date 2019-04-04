@@ -224,7 +224,7 @@ class UsersServices:
             return {'status': 'success',
                     'data': {},
                     'message': 'password updated successfully'}, 200
-        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+        return {'status': 'error', 'data': {}, 'message': 'password can not be updated'}, 400
 
     def get_user_from_token(self, token=None):
         """
@@ -235,3 +235,22 @@ class UsersServices:
         jwt_resp = decode_auth_token(token)['data']
         user = Users.query.filter_by(id=jwt_resp['sub']).first()
         return user
+
+    def update_password(self, data: dict, user=None):
+        """specific User update"""
+
+        logger.info("current user password update", data={'uuid': str(user.id)})
+        is_correct_password = flask_bcrypt.check_password_hash(user.password,
+                                                               data['current_password'])
+        if not is_correct_password:
+            return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
+
+        response = self.update({
+            "password": data['new_password'],
+            "updated_by": str(user.id)
+        }, uuid=str(user.id))
+        if response[1] != 200:
+            return {'status': 'error', 'data': {}, 'message': 'password can not be updated'}, 400
+        return {'status': 'success',
+                'data': {},
+                'message': 'password updated successfully'}, 200
