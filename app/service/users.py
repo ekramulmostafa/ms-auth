@@ -11,9 +11,11 @@ from flask import current_app as app
 
 from app.models import db
 from app.models.users import Users
+from app.models.verification_codes import VerificationCodes
+
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer
 from app.logging import Logger
-from app.utils.utils import send_email, generate_random_string
+from app.utils.utils import send_email, generate_random_string, save_verification_code
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -102,6 +104,11 @@ class UsersServices:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
         result_data.save()
         response_data = user_schema.dump(result_data).data
+        save_verification_code({
+            'user': result_data,
+            'types': 2,
+            'status': 1
+        })
         return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
     def update(self, data: dict, uuid):
@@ -153,13 +160,16 @@ class UsersServices:
 
     def verify_user(self, verification_code=None):
         """user verification"""
-        user = Users.query.filter_by(verification_code=verification_code).first()
+        vc_obj = VerificationCodes.query.filter_by(code=verification_code, status=1).first()
+        user = vc_obj.verified_user
         if user:
             if user.verified:
                 return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
             user.verified = True
             user.verified_at = datetime.utcnow()
-            user.verification_code = None
+            db.session.commit()
+            vc_obj.status = 2
+            vc_obj.updated_by = str(vc_obj.user_id)
             db.session.commit()
             response_data = user_schema.dump(user).data
             return {'status': 'success', 'data': response_data, 'message': ''}, 200

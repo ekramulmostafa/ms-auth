@@ -9,6 +9,7 @@ from marshmallow import fields, post_load, validates, ValidationError, Schema
 
 from app.models import ma
 from app.models.users import Users
+from app.serializers.verification_codes import VerificationCodesModelSchema
 
 DATE_FORMAT = '%Y-%m-%d'
 
@@ -20,6 +21,7 @@ class UsersModelSchema(ma.ModelSchema):
     birth_date = fields.Date(DATE_FORMAT)
     email = fields.Email(required=True)
     password = fields.String(load_only=True)
+    verifications = fields.Nested(VerificationCodesModelSchema, many=True, load_only=True)
     verified = fields.Boolean(dump_only=True)
     verified_at = fields.DateTime(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
