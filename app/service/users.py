@@ -2,7 +2,7 @@
 
 from smtplib import SMTPException
 from datetime import datetime, timedelta
-import jwt
+
 import flask_bcrypt
 from flask import current_app as app
 
@@ -19,8 +19,7 @@ from app.models.verification_codes import VerificationCodes
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
 from app.utils.utils import send_email, generate_random_string, \
-    save_verification_code, decode_auth_token
-
+    save_verification_code, decode_auth_token, encode_auth_token
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -153,12 +152,8 @@ class UsersServices:
                 'sub': str(user.id),
                 'roles': [str(role.id) for role in user.roles]
             }
-            jwt_token = jwt.encode(
-                payload,
-                app.config.get('JWT_SECRET_KEY'),
-                algorithm='HS256'
-            )
-            return {'status': 'success', 'data': jwt_token.decode(), 'message': ''}, 200
+            jwt_token = encode_auth_token(payload)
+            return {'status': 'success', 'data': jwt_token, 'message': ''}, 200
         return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
 
     def forget_password(self, data: dict):

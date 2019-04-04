@@ -29,6 +29,16 @@ def generate_random_string(chars=DEFAULT_CHAR_STRING, size=6):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
+def encode_auth_token(payload=None):
+    """ generate jwt token"""
+    token = jwt.encode(
+        payload,
+        app.config.get('JWT_SECRET_KEY'),
+        algorithm='HS256'
+    )
+    return token.decode()
+
+
 def decode_auth_token(auth_token):
     """Decodes the auth token"""
     try:

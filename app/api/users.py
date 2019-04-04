@@ -98,3 +98,11 @@ class CurrentUserAPI(Resource):
         """GET for User verification"""
         user = session.pop('current_user', None)
         return user_service.get_user_details(uuid=str(user.id))
+
+    @token_required
+    def put(self):
+        """PUT for Current User API Update"""
+        data = request.json
+        user = session.pop('current_user', None)
+        data['data']['updated_by'] = user.id
+        return user_service.update(data['data'], uuid=str(user.id))
