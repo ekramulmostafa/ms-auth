@@ -28,15 +28,18 @@ def generate_random_string(chars=DEFAULT_CHAR_STRING, size=6):
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def save_verification_code(data: dict):
+def save_verification_code(**kwargs):
     """generate random 6 character string"""
     verification_code_schema = VerificationCodesModelSchema()
-    code = generate_random_string()
+    try:
+        code = kwargs['code']
+    except KeyError:
+        code = generate_random_string()
 
-    obj = VerificationCodes(verified_user=data['user'],
+    obj = VerificationCodes(verified_user=kwargs['user'],
                             code=code,
-                            types=data['types'],
-                            status=data['status'])
+                            types=kwargs['types'],
+                            status=kwargs['status'])
     db.session.add(obj)
     db.session.commit()
     response_data = verification_code_schema.dump(obj).data

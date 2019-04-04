@@ -104,11 +104,7 @@ class UsersServices:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
         result_data.save()
         response_data = user_schema.dump(result_data).data
-        save_verification_code({
-            'user': result_data,
-            'types': 2,
-            'status': 1
-        })
+        save_verification_code(user=result_data, types=2, status=1)
         return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
     def update(self, data: dict, uuid):
@@ -148,6 +144,7 @@ class UsersServices:
         try:
             send_email(email_data)
             self.update({"verification_code": reset_code}, uuid=str(user.id))
+            save_verification_code(user=user, code=reset_code, types=1, status=1)
             return {'status': 'success',
                     'data': {},
                     'message': 'A password reset code has been sent to email address'
@@ -160,7 +157,9 @@ class UsersServices:
 
     def verify_user(self, verification_code=None):
         """user verification"""
-        vc_obj = VerificationCodes.query.filter_by(code=verification_code, status=1).first()
+        vc_obj = VerificationCodes.query.filter_by(code=verification_code,
+                                                   types=2,
+                                                   status=1).first()
         user = vc_obj.verified_user
         if user:
             if user.verified:
@@ -177,12 +176,17 @@ class UsersServices:
 
     def reset_password(self, data: dict, code=None):
         """user password reset"""
-        user = Users.query.filter_by(verification_code=code).first()
+        vc_obj = VerificationCodes.query.filter_by(code=code,
+                                                   types=1,
+                                                   status=1).first()
+        user = vc_obj.verified_user
         if user:
             self.update({
-                "password": data['password'],
-                "verification_code": None
+                "password": data['password']
             }, uuid=str(user.id))
+            vc_obj.status = 2
+            vc_obj.updated_by = str(vc_obj.user_id)
+            db.session.commit()
             return {'status': 'success',
                     'data': {},
                     'message': 'password updated successfully'}, 200
