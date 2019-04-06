@@ -27,9 +27,7 @@ class RolePermissionTests(BaseTest):
             content_type='application/json'
         )
 
-        json_response = json.loads(response.get_data(as_text=True))
-
-        role_id = json_response['data']['id']
+        role_id = response.json['data']['id']
 
         permission_url = url_for('auth.permission_permission_list')
         prm = {
@@ -43,9 +41,8 @@ class RolePermissionTests(BaseTest):
             data=permission_data,
             content_type='application/json'
         )
-        json_response = json.loads(response.get_data(as_text=True))
 
-        permission_id = json_response['data']['id']
+        permission_id = response.json['data']['id']
 
         # insert role permission
         params = {"role_id": role_id,
@@ -62,10 +59,9 @@ class RolePermissionTests(BaseTest):
             data=role_permission,
             content_type='application/json'
         )
-        json_response = json.loads(response.get_data(as_text=True))
 
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(json_response['data']['permission_id'], permission_id)
+        self.assertEqual(response.json['data']['permission_id'], permission_id)
 
         # update role permission
         params = {
@@ -83,10 +79,9 @@ class RolePermissionTests(BaseTest):
             data=role_permission,
             content_type='application/json'
         )
-        json_response = json.loads(response.get_data(as_text=True))
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(json_response['data']['status'], True)
+        self.assertEqual(response.json['data']['status'], True)
 
         # delete role permission
 
@@ -98,7 +93,6 @@ class RolePermissionTests(BaseTest):
             url,
             content_type='application/json'
         )
-        json_response = json.loads(response.get_data(as_text=True))
 
         self.assertEqual(response.status_code, 200)
 
@@ -109,7 +103,6 @@ class RolePermissionTests(BaseTest):
             url,
             content_type='application/json'
         )
-        json_response = json.loads(response.get_data(as_text=True))
 
         self.assertEqual(response.status_code, 404)
 
