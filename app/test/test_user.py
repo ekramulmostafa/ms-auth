@@ -2,8 +2,11 @@
 import json
 import unittest
 
+import flask_bcrypt
 from flask import url_for
 
+from app.models.users import Users
+from app.models.verification_codes import VerificationCodes
 from app.service.users import UsersServices
 from app.test import BaseTest
 
@@ -324,7 +327,7 @@ class UserTests(BaseTest):
                          'User email can not be changed')
 
     def test_08_user_forget_password(self):
-        """test update user failure case"""
+        """test forget password case"""
 
         url = url_for('auth.user_user_forget_password_api')
 
@@ -392,6 +395,70 @@ class UserTests(BaseTest):
         response_data = json.loads(response.data.decode())
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_data['message'], 'No User found')
+
+    def test_09_user_reset_password(self):
+        """test password reset case"""
+
+        user_data = {
+            "first_name": "Test",
+            "last_name": "User1",
+            "username": "user1",
+            "email": "tauwab@mailinator.com",
+            "phone": "01911111114",
+            "password": "123456",
+            "birth_date": "1993-11-25",
+            "status": 1
+        }
+
+        user, status = user_service.create(user_data)
+        self.assertEqual(status, 201)
+        self.assertEqual(user['status'], 'success')
+
+        request_data = {
+            "email": "tauwab@mailinator.com"
+        }
+        response, status = user_service.forget_password(request_data)
+        self.assertEqual(status, 200)
+
+        vc_obj = VerificationCodes.query.filter_by(user_id=user['data']['id'],
+                                                   types=1,
+                                                   status=1).first()
+        code = vc_obj.code
+        url = url_for('auth.user_user_reset_password_api', code=code)
+
+        request_data = {
+            "data": {
+                "password": "1234567"
+            }
+        }
+        request_json_data = json.dumps(request_data)
+        response = self.client.post(
+            url,
+            data=request_json_data,
+            content_type='application/json'
+        )
+        response_data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['message'], 'password updated successfully')
+
+        updated_user = Users.query.filter_by(id=user['data']['id']).first()
+
+        is_password_correct = flask_bcrypt.check_password_hash(updated_user.password,
+                                                               request_data['data']['password'])
+        self.assertTrue(is_password_correct)
+
+        is_password_correct = flask_bcrypt.check_password_hash(updated_user.password,
+                                                               user_data['password'])
+        self.assertFalse(is_password_correct)
+
+        response = self.client.post(
+            url,
+            data=request_json_data,
+            content_type='application/json'
+        )
+        response_data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_data['message'], 'Reset password failed')
 
 
 if __name__ == "__main__":

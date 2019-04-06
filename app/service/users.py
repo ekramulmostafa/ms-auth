@@ -178,7 +178,7 @@ class UsersServices:
         vc_obj = VerificationCodes.query.filter_by(code=code,
                                                    types=1,
                                                    status=1).first()
-        user = vc_obj.verified_user
+        user = vc_obj.verified_user if vc_obj else None
         if user:
             self.update({
                 "password": data['password']
@@ -189,4 +189,4 @@ class UsersServices:
             return {'status': 'success',
                     'data': {},
                     'message': 'password updated successfully'}, 200
-        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+        return {'status': 'error', 'data': {}, 'message': 'Reset password failed'}, 400
