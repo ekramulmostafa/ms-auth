@@ -49,6 +49,7 @@ class TestUserRole(BaseTest):
         result_data = user_schema.dump(user_result).data
         user_id = result_data['id']
         print(result_data)
+
         # user role data
         user_role = {
             'user_id': user_id,
@@ -62,44 +63,91 @@ class TestUserRole(BaseTest):
 
     def test_get_user_role_by_uuid(self):
         """ get user_role by uuid """
+
         user_role = UserRole.query.all()
         print(user_role[0].id)
-        print('user role test ....')
-        url = url_for('auth.user_role_user_role', uuid=user_role[0].id)
+        print('user role test .... is ')
+        print(user_role[0].id)
+        url = url_for('auth.user_role_user_role_detail', uuid=user_role[0].id)
         response = self.client.get(
             url
         )
         self.assert200(response)
 
-    # def test_put_user_role_by_uuid(self):
-    #     """ add user role to user table"""
-    #     user_role = UserRole.query.all()
-    #     user = User.query.all()
-    #     role = Role.query.all()
-    #     url = url_for('auth.user_role_user_role', uuid=user_role[0].id)
-    #     response = self.client.put(
-    #         url,
-    #         data=json.dumps(dict(
-    #             user_id=user[0].id,
-    #             role_id=role[0].id,
-    #             active=1,
-    #             ),
-    #         content_type='application/json'
-    #     )
-    #     self.assert200(response)
+    def test_put_user_role_by_uuid(self):
+        """ put user role to user table"""
+
+        user_role = UserRole.query.all()
+        user = Users.query.all()
+        user_schema = UsersModelSchema()
+        user_data = user_schema.dump(user[0]).data
+        role = Role.query.all()
+        role_schema = RoleSchema()
+        role_data = role_schema.dump(role[0]).data
+        url = url_for('auth.user_role_user_role_detail', uuid=user_role[0].id)
+        response = self.client.put(
+            url,
+            data=json.dumps(dict(
+                user_id=user_data['id'],
+                role_id=role_data['id'],
+                active=1,
+            )),
+            content_type='application/json'
+        )
+        self.assert200(response, message=None)
+
+    def save_role(self):
+        """ add another role """
+        role = {
+            "name": "secondrole",
+            "active": 1,
+            "created_by": "dsadsd",
+            "updated_by": "sadsad"
+        }
+        role_schema = RoleSchema()
+        result, error = role_schema.load(role)
+        if error:
+            print(error)
+        result.save()
+        data_json = role_schema.dump(result).data
+        role_id = data_json['id']
+        return role_id
+
+    def save_user(self):
+        """ save user """
+        user_data = {
+            "first_name": "SomeAND",
+            "last_name": "SomeLALL",
+            "username": "user1some",
+            "email": "some1@example.com",
+            "phone": "01911111316",
+            "password": "12345678",
+            "birth_date": "2003-11-25",
+            "status": 1
+        }
+        user_schema = UsersModelSchema()
+        user_result, error = user_schema.load(user_data)
+        if error:
+            print(error)
+        user_result.save()
+        result_data = user_schema.dump(user_result).data
+        user_id = result_data['id']
+        return user_id
 
     def test_add_user_role(self):
         """ add user role to user table """
+        role_id = self.save_role()
+        user_id = self.save_user()
         role = Role.query.all()
         user = Users.query.all()
         role_schema = RoleSchema()
         user_schema = UsersModelSchema()
-        json_role = role_schema.dump(role[0]).data
+        json_role = role_schema.dump(role[1]).data
         role_id = json_role['id']
-        print(json_role)
-        json_user = user_schema.dump(user[0]).data
+
+        json_user = user_schema.dump(user[1]).data
         user_id = json_user['id']
-        print(user_id)
+
         url = url_for('auth.user_role_user_role')
         response = self.client.post(
             url,
