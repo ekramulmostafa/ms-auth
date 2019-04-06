@@ -132,7 +132,7 @@ class UsersServices:
             user = Users.query.filter_by(phone=data['phone']).first()
 
         if not user:
-            return {'status': 'success', 'data': {}, 'message': 'No User found'}, 400
+            return {'status': 'error', 'data': {}, 'message': 'No User found'}, 400
 
         reset_code = generate_random_string()
         email_data = {
@@ -143,14 +143,13 @@ class UsersServices:
         }
         try:
             send_email(email_data)
-            self.update({"verification_code": reset_code}, uuid=str(user.id))
             save_verification_code(user=user, code=reset_code, types=1, status=1)
             return {'status': 'success',
                     'data': {},
                     'message': 'A password reset code has been sent to email address'
                     }, 200
         except SMTPException:
-            return {'status': 'success',
+            return {'status': 'error',
                     'data': {},
                     'message': 'sending email failed'
                     }, 400

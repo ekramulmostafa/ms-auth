@@ -323,6 +323,76 @@ class UserTests(BaseTest):
         self.assertEqual(user_updated_data['message']['email'][0],
                          'User email can not be changed')
 
+    def test_08_user_forget_password(self):
+        """test update user failure case"""
+
+        url = url_for('auth.user_user_forget_password_api')
+
+        user_data = {
+            "first_name": "Test",
+            "last_name": "User1",
+            "username": "user1",
+            "email": "tauwab@mailinator.com",
+            "phone": "01911111114",
+            "password": "123456",
+            "birth_date": "1993-11-25",
+            "status": 1
+        }
+
+        user, status = user_service.create(user_data)
+        self.assertEqual(status, 201)
+        self.assertEqual(user['status'], 'success')
+
+        request_data = {
+            "data": {
+                "email": "tauwab@mailinator.com"
+            }
+        }
+        request_json_data = json.dumps(request_data)
+
+        response = self.client.post(
+            url,
+            data=request_json_data,
+            content_type='application/json'
+        )
+
+        response_data = json.loads(response.data.decode())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['message'],
+                         'A password reset code has been sent to email address')
+
+        request_data = {
+            "data": {
+                "phone": "01911111114"
+            }
+        }
+        request_json_data = json.dumps(request_data)
+        response = self.client.post(
+            url,
+            data=request_json_data,
+            content_type='application/json'
+        )
+        response_data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['message'],
+                         'A password reset code has been sent to email address')
+
+        request_data = {
+            "data": {
+                "phone": "invalid phone"
+            }
+        }
+        request_json_data = json.dumps(request_data)
+        response = self.client.post(
+            url,
+            data=request_json_data,
+            content_type='application/json'
+        )
+        response_data = json.loads(response.data.decode())
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response_data['message'], 'No User found')
+
 
 if __name__ == "__main__":
     unittest.main()
