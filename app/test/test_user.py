@@ -460,6 +460,50 @@ class UserTests(BaseTest):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response_data['message'], 'Reset password failed')
 
+    def test_09_user_verification(self):
+        """test user verification"""
+        base_url = url_for('auth.user_user_list_api')
+
+        user_data = {
+            "data": {
+                "first_name": "Test",
+                "last_name": "User1",
+                "username": "user1",
+                "email": "tauwab@mailinator.com",
+                "phone": "01911111114",
+                "password": "123456",
+                "birth_date": "1993-11-25"
+            }
+        }
+
+        user_data = json.dumps(user_data)
+        user_response = self.client.post(
+            base_url,
+            data=user_data,
+            content_type='application/json'
+        )
+        user_response_data = json.loads(user_response.data.decode())
+
+        self.assertEqual(user_response.status_code, 201)
+        self.assertEqual(user_response_data['data']['verified'], False)
+
+        vc_obj = VerificationCodes.query.filter_by(user_id=user_response_data['data']['id'],
+                                                   types=2,
+                                                   status=1).first()
+
+        code = vc_obj.code
+        verification_url = url_for('auth.user_user_verification_api', code=code)
+
+        user_response = self.client.get(verification_url)
+        user_response_data = json.loads(user_response.data.decode())
+        self.assertEqual(user_response.status_code, 200)
+        self.assertEqual(user_response_data['data']['verified'], True)
+
+        user_response = self.client.get(verification_url)
+        user_response_data = json.loads(user_response.data.decode())
+        self.assertEqual(user_response.status_code, 400)
+        self.assertEqual(user_response_data['message'], 'user verification failed')
+
 
 if __name__ == "__main__":
     unittest.main()

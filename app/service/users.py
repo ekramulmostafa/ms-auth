@@ -159,7 +159,7 @@ class UsersServices:
         vc_obj = VerificationCodes.query.filter_by(code=verification_code,
                                                    types=2,
                                                    status=1).first()
-        user = vc_obj.verified_user
+        user = vc_obj.verified_user if vc_obj else None
         if user:
             if user.verified:
                 return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
@@ -171,7 +171,7 @@ class UsersServices:
             db.session.commit()
             response_data = user_schema.dump(user).data
             return {'status': 'success', 'data': response_data, 'message': ''}, 200
-        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+        return {'status': 'error', 'data': {}, 'message': 'user verification failed'}, 400
 
     def reset_password(self, data: dict, code=None):
         """user password reset"""
