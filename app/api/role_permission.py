@@ -20,24 +20,6 @@ rps_schema = RolePermissionSchema(many=True)
 class RolePermissionList(Resource):
     """Role Permission list functionalities"""
 
-    def get(self):
-        """Get all role permissions"""
-
-        logger.info("Get all role")
-        role_permissions = RolePermission.query.all()
-        # roles = roles_permissions_schema.dump(roles).data
-
-        roles_schema = rps_schema.dump(role_permissions).data
-        i = 0
-        for role_permission in role_permissions:
-            temprole = Role.query.get(role_permission.role_id)
-            temppermission = Permission.query.get(role_permission.permission_id)
-
-            roles_schema[i]['role_name'] = str(temprole.name)
-            roles_schema[i]['permission_name'] = str(temppermission.name)
-            i += 1
-        return jsonify(roles_schema)
-
     def post(self):
         """Insert a role permissions"""
         json_data = request.get_json(force=True)
