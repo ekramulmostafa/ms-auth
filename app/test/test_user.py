@@ -9,8 +9,6 @@ from app.test import BaseTest
 
 user_service = UsersServices()
 
-# TODO : will be refactored as phone now is unique
-
 
 class UserTests(BaseTest):
     """ Test User api"""
@@ -48,7 +46,6 @@ class UserTests(BaseTest):
             "last_name": "User1",
             "username": "user1",
             "email": "user1@example.com",
-            "phone": "01911111114",
             "password": "123456",
             "birth_date": "1993-11-25",
             "status": 1
@@ -180,7 +177,6 @@ class UserTests(BaseTest):
             "first_name": "Test",
             "last_name": "User1",
             "email": "user1@example.com",
-            "phone": "01911111114",
             "password": "123456",
             "birth_date": "1993-11-25",
         }

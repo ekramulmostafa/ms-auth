@@ -46,7 +46,7 @@ class Users(TimestampMixin, db.Model):
     updated_at = db.Column(db.DateTime,
                            default=datetime.utcnow,
                            onupdate=datetime.utcnow)
-    roles = db.relationship('Role', secondary=UserRole.__tablename__, backref=db.backref('users'))
+    roles = db.relationship(Role, secondary=UserRole.__tablename__, backref=db.backref('users'))
 
     def save(self, commit=True):
         """save method"""
@@ -67,4 +67,3 @@ class Users(TimestampMixin, db.Model):
         db.session.add(self)
         if commit is True:
             db.session.commit()
-
