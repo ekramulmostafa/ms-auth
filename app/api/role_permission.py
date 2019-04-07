@@ -3,6 +3,7 @@ from flask import request
 from flask_restplus import Namespace, Resource
 from app.logging import Logger
 from app.models.role_permission import RolePermission, RolePermissionSchema
+from app.service.role import RoleServices
 # from pprint import pprint
 api = Namespace('role_permission')
 
@@ -12,6 +13,7 @@ logger = Logger(__name__)
 # role permission schema
 rp_schema = RolePermissionSchema()
 rps_schema = RolePermissionSchema(many=True)
+role_service = RoleServices()
 
 
 @api.route('')
@@ -28,6 +30,8 @@ class RolePermissionList(Resource):
         # role = Role.query.get(json_data['role_id'])
         # permission = Permission.query.get(json_data['permission_id'])
         # role.save_role_permission(permission)
+        json_data['created_by'] = role_service.get_current_user()
+        json_data['updated_by'] = role_service.get_current_user()
 
         role_permission, errors = rp_schema.load(json_data, partial=True)
 
@@ -72,6 +76,8 @@ class RolePermissionDetail(Resource):
         json_data = request.get_json(force=True)
         if not json_data:
             return {'message': 'No input found'}, 400
+
+        json_data['updated_by'] = role_service.get_current_user()
 
         role_permission, errors = rp_schema.load(json_data, instance=role_obj, partial=True)
         if errors:

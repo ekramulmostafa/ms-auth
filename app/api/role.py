@@ -3,10 +3,12 @@ from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 from app.logging import Logger
 from app.models.role import Role, RoleSchema
+from app.service.role import RoleServices
 
 api = Namespace('role')
 role_schema = RoleSchema()
 roles_schema = RoleSchema(many=True)
+role_service = RoleServices()
 
 logger = Logger(__name__)
 
@@ -75,6 +77,8 @@ class RoleList(Resource):
         if not json_data:
             return {'message': 'No input data provided'}, 400
         logger.info("Insert a role", data=json_data)
+        json_data['created_by'] = role_service.get_current_user()
+        json_data['updated_by'] = role_service.get_current_user()
         # Validate and deserialize input
         role, errors = role_schema.load(json_data)
         if errors:
@@ -115,11 +119,13 @@ class RoleDetail(Resource):
         if not json_data:
             return {'message': 'No input data provided'}, 400
 
+        json_data['updated_by'] = role_service.get_current_user()
+
         role, errors = role_schema.load(json_data, instance=role_obj, partial=True)
         if errors:
             logger.warning("Update role error", data=errors)
             return errors, 422
-        # print(role)
+
         role.save()
         result = role_schema.dump(role).data
         return {'status': 'success', 'data': result}, 201

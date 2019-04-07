@@ -5,6 +5,9 @@ import datetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import and_
+# from marshmallow import fields
+# from app.models.role import Role, RoleSchema
+# from app.models.permission import Permission, PermissionSchema
 
 from . import db, ma
 
@@ -27,6 +30,11 @@ class RolePermission(db.Model):
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
     updated_at = db.Column(
         db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+
+    # permission = db.relationship("role_permission",
+    # foreign_keys=[role_id], backref=db.backref('permission'))
+    # role = db.relationship("role_permission",
+    # foreign_keys=[permission_id], backref=db.backref('role'))
 
     @classmethod
     def get_by_role_permission(cls, role_id, permisson_id):
@@ -53,6 +61,8 @@ class RolePermission(db.Model):
 
 class RolePermissionSchema(ma.ModelSchema):
     """Role Permission model Schema"""
+    # permission = fields.Nested(PermissionSchema, many=True)
+    # role = fields.Nested(PermissionSchema, many=True)
 
     class Meta:
         """Role Permission model meta"""
