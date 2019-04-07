@@ -2,15 +2,16 @@
 import datetime
 import uuid
 
+
 from sqlalchemy.dialects.postgresql import UUID
-# from app.models.role import Role
+from app.helper.helper import created_or_updated_by
 from app.models import ma
 from . import db
 
 
 class UserRole(db.Model):
     """ User role model """
-    __tablename__ = 'user_role'
+    # __tablename__ = 'user_role'
     __table_args__ = (
         db.UniqueConstraint('user_id', 'role_id', name='unique_user_role'),
     )
@@ -18,6 +19,8 @@ class UserRole(db.Model):
     role_id = db.Column(UUID, db.ForeignKey('role.id'), nullable=False)
     user_id = db.Column(UUID, db.ForeignKey('users.id'), nullable=False)
     active = db.Column(db.Boolean, nullable=False, default=1)
+    created_by = db.Column(db.String(), nullable=False, default=created_or_updated_by())
+    updated_by = db.Column(db.String(), nullable=False, default=created_or_updated_by())
     update_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 

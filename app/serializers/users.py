@@ -23,7 +23,7 @@ class UsersModelSchema(ma.ModelSchema):
     password = fields.String(load_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
-    roles = fields.Nested(RoleSchema, many=True)
+    roles = fields.Nested(RoleSchema, many=True, load_only=True)
 
     class Meta:
         """Meta class"""
