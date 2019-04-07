@@ -2,6 +2,7 @@
 
 import random
 import string
+import flask_bcrypt
 
 import jwt
 from flask_mail import Message
@@ -27,6 +28,17 @@ DEFAULT_CHAR_STRING = string.ascii_uppercase+string.ascii_lowercase + string.dig
 def generate_random_string(chars=DEFAULT_CHAR_STRING, size=6):
     """generate random 6 character string"""
     return ''.join(random.choice(chars) for _ in range(size))
+
+
+def generate_password(password):
+    password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
+    return password_hash
+
+
+def check_password(password_hash, password):
+    is_correct_password = flask_bcrypt.check_password_hash(password_hash,
+                                                           password)
+    return is_correct_password
 
 
 def encode_auth_token(payload=None):
