@@ -31,11 +31,13 @@ def generate_random_string(chars=DEFAULT_CHAR_STRING, size=6):
 
 
 def generate_password(password):
+    """generate password"""
     password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
     return password_hash
 
 
 def check_password(password_hash, password):
+    """check password is correct"""
     is_correct_password = flask_bcrypt.check_password_hash(password_hash,
                                                            password)
     return is_correct_password
