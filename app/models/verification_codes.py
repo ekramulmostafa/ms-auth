@@ -23,14 +23,19 @@ class VerificationCodes(TimestampMixin, db.Model):
     ]
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id'))
+    verified_user = db.relationship('Users', foreign_keys=[user_id], backref='verifications')
 
     code = db.Column(db.String(100), nullable=False)
     expired_at = db.Column(db.DateTime, nullable=True)
     types = db.Column(db.Integer, ChoiceType(TYPES), nullable=False)
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False)
 
-    updated_by = db.Column(UUID(as_uuid=True), nullable=True)
+    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
+    created_by_user = db.relationship("Users", foreign_keys=[created_by])
 
     def save(self, commit=True):
         """save method"""

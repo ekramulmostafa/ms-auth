@@ -31,7 +31,6 @@ class Users(TimestampMixin, db.Model):
 
     verified = db.Column(db.Boolean, nullable=False, default=False)
     verified_at = db.Column(db.DateTime, nullable=True)
-    verifications = db.relationship('VerificationCodes', backref='verified_user')
 
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
     active = db.Column(db.Boolean, nullable=False, default=True)
