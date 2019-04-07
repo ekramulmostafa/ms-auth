@@ -8,9 +8,13 @@ from dateutil.relativedelta import relativedelta
 from marshmallow import fields, post_load, validates, ValidationError, Schema
 
 from app.models import ma
-from app.models.role import RoleSchema
+
 from app.models.users import Users
+
 from app.serializers.verification_codes import VerificationCodesModelSchema
+
+from app.models.role import RoleSchema
+
 
 DATE_FORMAT = '%Y-%m-%d'
 
@@ -27,8 +31,6 @@ class UsersModelSchema(ma.ModelSchema):
     verified_at = fields.DateTime(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
-
-    # TODO : will be deleted after bon-104 merged
     roles = fields.Nested(RoleSchema, many=True)
 
     class Meta:

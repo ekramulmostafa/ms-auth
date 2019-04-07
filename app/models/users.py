@@ -1,13 +1,17 @@
 """User model"""
 
 import uuid
-
+from datetime import datetime
 from sqlalchemy_utils import ChoiceType
+
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.model_mixin import TimestampMixin
 
 from app.models.role import Role
+
+from app.models.user_role import UserRole
+
 from . import db
 
 
@@ -36,24 +40,31 @@ class Users(TimestampMixin, db.Model):
 
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
     active = db.Column(db.Boolean, nullable=False, default=True)
-    # TODO : 'roles' will be deleted after bon-104 merged
-    roles = db.relationship('Role', secondary="user_role", backref='users', cascade="all, delete")
 
-    updated_by = db.Column(UUID(as_uuid=True), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
+    updated_at = db.Column(db.DateTime,
+                           default=datetime.utcnow,
+                           onupdate=datetime.utcnow)
+    roles = db.relationship('Role', secondary=UserRole.__tablename__, backref=db.backref('users'))
 
     def save(self, commit=True):
         """save method"""
-        # TODO : will be deleted after bon-104 merged
-        self.roles.append(Role.query.first())
         db.session.add(self)
         if commit is True:
             db.session.commit()
 
+    def save_user_role(self, role, commit=True):
+        """save method"""
+        self.roles.append(role)
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
 
-class UserRole(db.Model):
-    """temporary user role model"""
-    # TODO : will be deleted after bon-104 merged
-    __tablename__ = "user_role"
-    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
-    role_id = db.Column(UUID(as_uuid=True), db.ForeignKey('role.id', ondelete='CASCADE'))
+    def edit_user_role(self, role, commit=True):
+        """ edit user """
+        self.roles.append(role)
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
