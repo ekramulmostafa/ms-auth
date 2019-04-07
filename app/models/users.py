@@ -35,7 +35,11 @@ class Users(TimestampMixin, db.Model):
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
     active = db.Column(db.Boolean, nullable=False, default=True)
 
-    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
+    # updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
+    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
+    created_by_user = db.relationship("Users", foreign_keys=[created_by])
 
     def save(self, commit=True):
         """save method"""
