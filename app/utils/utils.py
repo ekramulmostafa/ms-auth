@@ -39,7 +39,8 @@ def save_verification_code(**kwargs):
     obj = VerificationCodes(verified_user=kwargs['user'],
                             code=code,
                             types=kwargs['types'],
-                            status=kwargs['status'])
+                            status=kwargs['status'],
+                            created_by=str(kwargs['user'].id))
     db.session.add(obj)
     db.session.commit()
     response_data = verification_code_schema.dump(obj).data

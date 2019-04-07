@@ -165,7 +165,6 @@ class UsersServices:
                 return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
             user.verified = True
             user.verified_at = datetime.utcnow()
-            db.session.commit()
             vc_obj.status = 2
             vc_obj.updated_by = str(vc_obj.user_id)
             db.session.commit()

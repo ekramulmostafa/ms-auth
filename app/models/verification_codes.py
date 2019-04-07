@@ -34,11 +34,11 @@ class VerificationCodes(TimestampMixin, db.Model):
 
     updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
     created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
-    updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
-    created_by_user = db.relationship("Users", foreign_keys=[created_by])
+    updated_by_user_verification = db.relationship("Users", foreign_keys=[updated_by])
+    created_by_user_verification = db.relationship("Users", foreign_keys=[created_by])
 
     def save(self, commit=True):
-        """save method"""
+        """VerificationCodes save method"""
         db.session.add(self)
         if commit is True:
             db.session.commit()
