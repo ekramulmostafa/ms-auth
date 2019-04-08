@@ -1,3 +1,4 @@
+""" login related testing """
 import json
 
 from flask import url_for
@@ -10,7 +11,7 @@ user_service = UsersServices()
 
 
 class UserLoginTests(BaseTest):
-    """ Test User api"""
+    """ Test User login api"""
 
     def test_01_login(self):
         """ test Login user"""
