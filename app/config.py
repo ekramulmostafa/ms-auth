@@ -15,6 +15,7 @@ class Config:
 
     )
     LOG_LEVEL = logging.DEBUG
+    JWT_SECRET_KEY = 'C5foBUCnYa9ZQuM17pArsMzYlA8HbjH9bwLC5FOeVwNqAxv8rW'
 
 
 class DevelopmentConfig(Config):
