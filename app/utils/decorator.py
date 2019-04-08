@@ -12,8 +12,8 @@ def token_required(f):
     def wrapped(*args, **kwargs):
         auth_token = request.headers.get('Authorization')
         if auth_token:
-            prefix, token = auth_token.split(' ')
-            if prefix != 'Bearer':
+            token = auth_token.split(' ')
+            if (token[0] != 'Bearer') or (len(token) < 2):
                 response_object = {
                     'status': 'error',
                     'data': {},
@@ -21,7 +21,7 @@ def token_required(f):
                 }
                 return response_object, 401
 
-            resp = decode_auth_token(token)
+            resp = decode_auth_token(token[1])
             if resp['status'] == 'error':
                 response_object = {
                     'status': 'error',
@@ -39,6 +39,13 @@ def token_required(f):
                     'message': 'no user found with this token'
                 }
                 return response_object, 401
+        else:
+            response_object = {
+                'status': 'error',
+                'data': {},
+                'message': 'no authorization token found'
+            }
+            return response_object, 401
 
         return f(*args, **kwargs)
 

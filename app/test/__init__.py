@@ -73,3 +73,16 @@ class BaseTest(TestCase):
         )
         response_data = json.loads(response.data.decode())
         return response_data['data']
+
+    def login(self):
+        """login function"""
+        user = self.create_user()
+        role = self.create_role()
+        self.assign_role_to_user(user['id'], role['id'])
+
+        request_data = {
+            "email": user['email'],
+            "password": '123456',
+        }
+        response = UsersServices().login(request_data)
+        return response[0]['data']

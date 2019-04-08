@@ -153,7 +153,12 @@ class UsersServices:
                 'roles': [str(role.id) for role in user.roles]
             }
             jwt_token = encode_auth_token(payload)
-            return {'status': 'success', 'data': jwt_token, 'message': ''}, 200
+            return {'status': 'success',
+                    'data': {
+                        'user_id': str(user.id),
+                        'token': jwt_token
+                    },
+                    'message': ''}, 200
         return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
 
     def forget_password(self, data: dict):
