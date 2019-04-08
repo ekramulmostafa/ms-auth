@@ -38,6 +38,11 @@ class BaseTest(TestCase):
         user = UsersServices().create(user_data)
         return user[0]['data']
 
+    def get_user(self, user_id):
+        """get_user helper method"""
+        user = UsersServices().get_user_details(user_id)
+        return user[0]['data']
+
     def create_role(self):
         """create role helper method"""
         url = url_for('auth.role_role_list')
