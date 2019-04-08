@@ -80,3 +80,69 @@ class CurrentUserTests(BaseTest):
         self.assertNotEqual(json_response['data']['first_name'], current_user['first_name'])
         self.assertEqual(json_response['data']['first_name'], 'Current_user')
         self.assertEqual(json_response['data']['id'], current_user['id'])
+
+    def test_03_current_user_password_update(self):
+        """test current user update api"""
+        login_reponse = self.login()
+        token = 'Bearer {0}'.format(login_reponse['token'])
+        current_user = self.get_user(login_reponse['user_id'])
+
+        user_password_data = {
+            "data": {
+                "current_password": "123456",
+                "new_password": "1234567"
+            }
+        }
+        user_json_data = json.dumps(user_password_data)
+
+        update_url = url_for('auth.user_current_user_update_password_api')
+        headers = {
+            'Authorization': token
+        }
+        user_response = self.client.put(
+            update_url,
+            data=user_json_data,
+            headers=headers,
+            content_type='application/json'
+        )
+        self.assert200(user_response)
+        json_response = user_response.json
+        self.assertEqual(json_response['message'], 'password updated successfully')
+        self.assertEqual(current_user['status'], 1)
+
+        user_password_data = {
+            "data": {
+                "current_password": "123456",
+                "new_password": "1234567"
+            }
+        }
+        user_json_data = json.dumps(user_password_data)
+        user_response = self.client.put(
+            update_url,
+            data=user_json_data,
+            headers=headers,
+            content_type='application/json'
+        )
+        self.assert400(user_response)
+        json_response = user_response.json
+        self.assertEqual(json_response['message'], 'Incorrect password')
+
+        user_password_data = {
+            "data": {
+                "current_password": "1234567",
+                "new_password": "123456",
+                "status": 2,
+                "first_name": "test_user_new"
+            }
+        }
+        user_json_data = json.dumps(user_password_data)
+        user_response = self.client.put(
+            update_url,
+            data=user_json_data,
+            headers=headers,
+            content_type='application/json'
+        )
+        self.assert200(user_response)
+        current_user = self.get_user(login_reponse['user_id'])
+        self.assertEqual(current_user['status'], 1)
+        self.assertNotEqual(current_user['first_name'], 'test_user_new')
