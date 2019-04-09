@@ -29,7 +29,7 @@ def generate_random_string(chars=DEFAULT_CHAR_STRING, size=6):
 
 
 def save_verification_code(**kwargs):
-    """generate random 6 character string"""
+    """save verification code to db"""
     verification_code_schema = VerificationCodesModelSchema()
     try:
         code = kwargs['code']
