@@ -41,3 +41,20 @@ class VerificationCodes(TimestampMixin, db.Model):
         db.session.add(self)
         if commit is True:
             db.session.commit()
+
+    @staticmethod
+    def save_verification_code(**kwargs):
+        """save verification code to db"""
+        try:
+            code = kwargs['code']
+        except KeyError:
+            code = uuid.uuid4()
+
+        obj = VerificationCodes(verified_user=kwargs['user'],
+                                code=code,
+                                types=kwargs['types'],
+                                status=kwargs['status'],
+                                created_by=str(kwargs['user'].id))
+        db.session.add(obj)
+        db.session.commit()
+        return obj
