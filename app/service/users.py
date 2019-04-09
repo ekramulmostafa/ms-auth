@@ -4,11 +4,12 @@ from smtplib import SMTPException
 from datetime import datetime
 from uuid import uuid4
 
+from jinja2 import TemplateNotFound
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
 from sqlalchemy.orm.exc import NoResultFound
 
-from flask import current_app as app
+from flask import current_app as app, render_template
 
 from app.models import db
 from app.models.users import Users
@@ -139,7 +140,7 @@ class UsersServices:
             "subject": "Forget Password",
             "sender": app.config.get('MAIL_USERNAME'),
             "recipients": [user.email],
-            "body": "your password reset code {0}".format(reset_code)
+            'html': render_template('reset_password.html', code=reset_code)
         }
         try:
             send_email(email_data)
@@ -148,6 +149,11 @@ class UsersServices:
                     'data': {},
                     'message': 'A password reset code has been sent to email address'
                     }, 200
+        except TemplateNotFound:
+            return {'status': 'error',
+                    'data': {},
+                    'message': 'Email template not found'
+                    }, 400
         except SMTPException:
             return {'status': 'error',
                     'data': {},
