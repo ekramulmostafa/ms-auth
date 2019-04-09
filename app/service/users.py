@@ -16,7 +16,7 @@ from app.models.verification_codes import VerificationCodes
 
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer
 from app.logging import Logger
-from app.utils.utils import send_email, generate_random_string, save_verification_code
+from app.utils.utils import send_email, save_verification_code
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
