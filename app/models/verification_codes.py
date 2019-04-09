@@ -1,7 +1,7 @@
 """User model"""
 
 import uuid
-
+from datetime import datetime, timedelta
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_utils import ChoiceType
 
@@ -20,6 +20,7 @@ class VerificationCodes(TimestampMixin, db.Model):
         (1, 'New'),
         (2, 'Used'),
     ]
+    EXPIRY_DAYS = 7
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
 
@@ -27,7 +28,9 @@ class VerificationCodes(TimestampMixin, db.Model):
     verified_user = db.relationship('Users', foreign_keys=[user_id], backref='verifications')
 
     code = db.Column(db.String(100), nullable=False, unique=True)
-    expired_at = db.Column(db.DateTime, nullable=True)
+    expired_at = db.Column(db.DateTime,
+                           nullable=True,
+                           default=datetime.utcnow()+timedelta(days=EXPIRY_DAYS))
     types = db.Column(db.Integer, ChoiceType(TYPES), nullable=False)
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False)
 

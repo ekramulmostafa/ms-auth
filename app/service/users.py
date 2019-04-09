@@ -161,6 +161,10 @@ class UsersServices:
                                                    status=1).first()
         user = vc_obj.verified_user if vc_obj else None
         if user:
+            if vc_obj.expired_at and (vc_obj.expired_at < datetime.utcnow()):
+                return {'status': 'error',
+                        'data': {},
+                        'message': 'verification code has been expired'}, 400
             if user.verified:
                 return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
             user.verified = True
@@ -179,6 +183,10 @@ class UsersServices:
                                                    status=1).first()
         user = vc_obj.verified_user if vc_obj else None
         if user:
+            if vc_obj.expired_at and (vc_obj.expired_at < datetime.utcnow()):
+                return {'status': 'error',
+                        'data': {},
+                        'message': 'password reset code has been expired'}, 400
             self.update({
                 "password": data['password']
             }, uuid=str(user.id))
