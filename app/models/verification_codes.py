@@ -19,7 +19,6 @@ class VerificationCodes(TimestampMixin, db.Model):
     STATUS = [
         (1, 'New'),
         (2, 'Used'),
-        (3, 'Expired')
     ]
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -27,7 +26,7 @@ class VerificationCodes(TimestampMixin, db.Model):
     user_id = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id'))
     verified_user = db.relationship('Users', foreign_keys=[user_id], backref='verifications')
 
-    code = db.Column(db.String(100), nullable=False)
+    code = db.Column(db.String(100), nullable=False, unique=True)
     expired_at = db.Column(db.DateTime, nullable=True)
     types = db.Column(db.Integer, ChoiceType(TYPES), nullable=False)
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False)

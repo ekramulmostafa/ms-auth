@@ -2,6 +2,7 @@
 
 from smtplib import SMTPException
 from datetime import datetime
+from uuid import uuid4
 
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
@@ -125,16 +126,15 @@ class UsersServices:
     def forget_password(self, data: dict):
         """forget password"""
         user = None
-        result_data_keys = list(data.keys())
-        if 'email' in result_data_keys:
+        if 'email' in data:
             user = Users.query.filter_by(email=data['email']).first()
-        elif 'phone' in result_data_keys:
+        elif 'phone' in data:
             user = Users.query.filter_by(phone=data['phone']).first()
 
         if not user:
             return {'status': 'error', 'data': {}, 'message': 'No User found'}, 400
 
-        reset_code = generate_random_string()
+        reset_code = uuid4()
         email_data = {
             "subject": "Forget Password",
             "sender": app.config.get('MAIL_USERNAME'),

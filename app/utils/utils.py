@@ -2,7 +2,7 @@
 
 import random
 import string
-
+from uuid import uuid4
 
 from flask_mail import Message
 
@@ -34,7 +34,7 @@ def save_verification_code(**kwargs):
     try:
         code = kwargs['code']
     except KeyError:
-        code = generate_random_string()
+        code = uuid4()
 
     obj = VerificationCodes(verified_user=kwargs['user'],
                             code=code,
