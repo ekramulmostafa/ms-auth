@@ -20,12 +20,10 @@ class RolePermission(db.Model):
     status = db.Column(db.Boolean(), nullable=False, default=True)
     created_by = db.Column(db.String(100), nullable=False)
     updated_by = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow,
-        nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow,
-        onupdate=datetime.datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+                           nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+                           onupdate=datetime.datetime.utcnow, nullable=False)
 
     @classmethod
     def get_by_role_permission(cls, role_id, permisson_id):
@@ -38,7 +36,7 @@ class RolePermission(db.Model):
 
     def save_data(self, commit=True):
         """Save data for role permission model"""
-
+        db.session.add(self)
         if commit is True:
             db.session.commit()
 

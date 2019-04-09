@@ -16,8 +16,6 @@ class RolePermissionTests(BaseTest):
         prm = {
             'name': 'role_test',
             'active': True,
-            'created_by': 'Test_12381237817',
-            'updated_by': 'Test_12381237817'
         }
         role_data = json.dumps(prm)
 
@@ -47,9 +45,7 @@ class RolePermissionTests(BaseTest):
         # insert role permission
         params = {"role_id": role_id,
                   "permission_id": permission_id,
-                  "status": "false",
-                  "created_by": "1123123",
-                  "updated_by": "12323122"}
+                  "status": "false", }
         role_permission = json.dumps(params)
 
         url = url_for('auth.role_permission_role_permission_list')
@@ -66,8 +62,7 @@ class RolePermissionTests(BaseTest):
         # update role permission
         params = {
             "status": "true",
-            "created_by": "1123123",
-            "updated_by": "12323122"}
+        }
 
         role_permission = json.dumps(params)
         url = url_for('auth.role_permission_role_permission_detail',
