@@ -79,8 +79,10 @@ class RolePermissionTests(BaseTest):
         self.assertEqual(response.json['data']['status'], True)
 
         # check readonly fields value changing
-        self.assertIsNotNone(response.json['data']['updated_at'])
-        self.assertNotEqual(response.json['data']['created_at'], response.json['data']['updated_at'])
+        created_at = response.json['data']['created_at']
+        updated_at = response.json['data']['updated_at']
+        self.assertIsNotNone(updated_at)
+        self.assertNotEqual(created_at, updated_at)
 
 
 if __name__ == "__main__":

@@ -48,4 +48,5 @@ class RolePermissionSchema(ma.ModelSchema):
     class Meta:
         """Role Permission model meta"""
         model = RolePermission
-        fields = ['id', 'role_id', 'permission_id', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at']
+        fields = ['id', 'role_id', 'permission_id', 'status',
+                  'created_by', 'updated_by', 'created_at', 'updated_at']
