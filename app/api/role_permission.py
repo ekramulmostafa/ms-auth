@@ -57,10 +57,7 @@ class RolePermissionDetail(Resource):
         if role_obj is None:
             return {'message': 'Role Permission not found'}, 404
 
-        role_permission, errors = rp_schema.dump(role_obj).data
-        if errors:
-            logger.warning("Get role permission error", data=errors)
-            return errors, 422
+        role_permission = rp_schema.dump(role_obj).data
 
         return {'status': 'success', 'data': role_permission}, 200
 

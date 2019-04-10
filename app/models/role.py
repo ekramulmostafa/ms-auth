@@ -99,8 +99,8 @@ class RoleSchema(ma.ModelSchema):
     active = fields.Boolean()
     created_by = fields.String()
     updated_by = fields.String()
-    created_at = fields.String()
-    updated_at = fields.String()
+    created_at = fields.String(dump_only=True)
+    updated_at = fields.String(dump_only=True)
     permissions = fields.Nested(PermissionSchema, many=True)
 
     class Meta:

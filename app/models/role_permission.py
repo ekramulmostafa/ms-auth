@@ -3,7 +3,7 @@ import datetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import and_
-
+from marshmallow import fields
 from . import db, ma
 
 
@@ -42,8 +42,10 @@ class RolePermission(db.Model):
 
 class RolePermissionSchema(ma.ModelSchema):
     """Role Permission model Schema"""
+    created_at = fields.String(dump_only=True)
+    updated_at = fields.String(dump_only=True)
 
     class Meta:
         """Role Permission model meta"""
         model = RolePermission
-        fields = ('id', 'role_id', 'permission_id', 'status', 'created_by', 'updated_by')
+        fields = ['id', 'role_id', 'permission_id', 'status', 'created_by', 'updated_by', 'created_at', 'updated_at']

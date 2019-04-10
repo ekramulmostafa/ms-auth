@@ -8,5 +8,5 @@ class RoleCustomSchema(ma.ModelSchema):
     id = fields.String()
     name = fields.String()
     active = fields.String()
-    created_at = fields.String()
-    updated_at = fields.String()
+    created_at = fields.String(dump_only=True)
+    updated_at = fields.String(dump_only=True)
