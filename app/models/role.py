@@ -94,3 +94,4 @@ class RoleSchema(ma.ModelSchema):
     class Meta:
         """Role model meta"""
         model = Role
+        fields = ('id', 'active', 'name', 'created_by', 'updated_by')

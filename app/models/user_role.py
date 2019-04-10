@@ -7,6 +7,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from app.helper.helper import created_or_updated_by
 from app.models import ma
 from . import db
+# from marshmallow import fields
 
 
 class UserRole(db.Model):
@@ -53,3 +54,4 @@ class UserRoleSchema(ma.ModelSchema):
         """ User role Meta """
         model = UserRole
         fields = ('id', 'role_id', 'user_id', 'active')
+        ordered = True

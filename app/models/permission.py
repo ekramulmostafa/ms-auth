@@ -72,3 +72,4 @@ class PermissionSchema(ma.ModelSchema):
         """ Meta class """
         model = Permission
         fields = ("id", "name", "code", "active", 'created_at', 'updated_at')
+        ordered = True

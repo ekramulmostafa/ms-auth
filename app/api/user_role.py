@@ -7,7 +7,7 @@ from app.models.user_role import UserRole as UserRoles
 from app.models.role import RoleSchema
 from app.models.user_role import UserRoleSchema
 
-api = Namespace('user_role')
+api = Namespace("user-role")
 role_schema = RoleSchema()
 user_role_schema = UserRoleSchema()
 user_roles_schema = UserRoleSchema(many=True)
