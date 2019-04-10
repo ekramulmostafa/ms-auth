@@ -68,7 +68,7 @@ class TestUserRole(BaseTest):
         print(user_role[0].id)
         print('user role test .... is ')
         print(user_role[0].id)
-        url = url_for('auth.user_role_user_role_detail', uuid=user_role[0].id)
+        url = url_for('auth.user-role_user_role_detail', uuid=user_role[0].id)
         response = self.client.get(
             url
         )
@@ -84,7 +84,7 @@ class TestUserRole(BaseTest):
         role = Role.query.all()
         role_schema = RoleSchema()
         role_data = role_schema.dump(role[0]).data
-        url = url_for('auth.user_role_user_role_detail', uuid=user_role[0].id)
+        url = url_for('auth.user-role_user_role_detail', uuid=user_role[0].id)
         response = self.client.put(
             url,
             data=json.dumps(dict(
@@ -148,7 +148,7 @@ class TestUserRole(BaseTest):
         json_user = user_schema.dump(user[1]).data
         user_id = json_user['id']
 
-        url = url_for('auth.user_role_user_role')
+        url = url_for('auth.user-role_user_role')
         response = self.client.post(
             url,
             data=json.dumps(dict(
@@ -171,7 +171,7 @@ class TestUserRole(BaseTest):
         role_id = json_role['id']
         json_user = user_schema.dump(user[0]).data
         user_id = json_user['id']
-        url = url_for('auth.user_role_user_role', uuid=user_role[0].id)
+        url = url_for('auth.user-role_user_role', uuid=user_role[0].id)
         response = self.client.put(
             url,
             data=json.dumps(dict(
