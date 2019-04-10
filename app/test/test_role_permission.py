@@ -48,7 +48,7 @@ class RolePermissionTests(BaseTest):
                   "status": "false", }
         role_permission = json.dumps(params)
 
-        url = url_for('auth.role_permission_role_permission_list')
+        url = url_for('auth.role-permission_role_permission_list')
 
         response = self.client.post(
             url,
@@ -65,7 +65,7 @@ class RolePermissionTests(BaseTest):
         }
 
         role_permission = json.dumps(params)
-        url = url_for('auth.role_permission_role_permission_detail',
+        url = url_for('auth.role-permission_role_permission_detail',
                       role_id=role_id,
                       permission_id=permission_id)
 

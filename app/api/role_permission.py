@@ -5,7 +5,7 @@ from app.logging import Logger
 from app.models.role_permission import RolePermission, RolePermissionSchema
 from app.utils.get_current_user import get_current_user
 # from pprint import pprint
-api = Namespace('role_permission')
+api = Namespace('role-permission')
 
 
 logger = Logger(__name__)
