@@ -39,12 +39,6 @@ class RolePermission(db.Model):
         if commit is True:
             db.session.commit()
 
-    def delete(self, commit=True):
-        """Delete data for role permission model"""
-        db.session.delete(self)
-        if commit is True:
-            db.session.commit()
-
 
 class RolePermissionSchema(ma.ModelSchema):
     """Role Permission model Schema"""

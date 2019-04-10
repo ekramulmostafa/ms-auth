@@ -78,29 +78,6 @@ class RolePermissionTests(BaseTest):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['data']['status'], True)
 
-        # delete role permission
-
-        url = url_for('auth.role_permission_role_permission_detail',
-                      role_id=role_id,
-                      permission_id=permission_id)
-
-        response = self.client.delete(
-            url,
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, 200)
-
-        url = url_for('auth.role_permission_role_permission_detail',
-                      role_id=role_id,
-                      permission_id=permission_id)
-        response = self.client.get(
-            url,
-            content_type='application/json'
-        )
-
-        self.assertEqual(response.status_code, 404)
-
 
 if __name__ == "__main__":
     unittest.main()

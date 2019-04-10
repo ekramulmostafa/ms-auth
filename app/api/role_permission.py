@@ -86,14 +86,3 @@ class RolePermissionDetail(Resource):
         role_permission.save_data()
         result = rp_schema.dump(role_permission).data
         return {'status': 'success', 'data': result}, 200
-
-    def delete(self, role_id, permission_id):
-        """ delete role permission """
-        logger.info("delete role permission")
-
-        role_obj = RolePermission.get_by_role_permission(role_id, permission_id)
-        if role_obj is None:
-            return {'message': 'Role not found'}, 404
-
-        role_obj.delete()
-        return {'status': 'successfully deleted'}, 200
