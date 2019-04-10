@@ -4,7 +4,6 @@ from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
-# from app.models.user_role import UserRole
 from . import db, ma
 
 
