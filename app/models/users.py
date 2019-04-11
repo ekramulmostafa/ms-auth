@@ -3,9 +3,13 @@
 import uuid
 
 from sqlalchemy_utils import ChoiceType
+
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.model_mixin import TimestampMixin
+
+from app.models.user_role import UserRole
+from app.models.role import Role
 
 from . import db
 
@@ -35,6 +39,8 @@ class Users(TimestampMixin, db.Model):
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
     active = db.Column(db.Boolean, nullable=False, default=True)
 
+    roles = db.relationship(Role, secondary=UserRole.__tablename__, backref=db.backref('users'))
+
     updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
     created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
     updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
@@ -42,6 +48,20 @@ class Users(TimestampMixin, db.Model):
 
     def save(self, commit=True):
         """ user save method"""
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def save_user_role(self, role, commit=True):
+        """save method"""
+        self.roles.append(role)
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def edit_user_role(self, role, commit=True):
+        """ edit user """
+        self.roles.append(role)
         db.session.add(self)
         if commit is True:
             db.session.commit()

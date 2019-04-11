@@ -3,6 +3,7 @@ from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 from app.logging import Logger
 from app.models.role import Role, RoleSchema
+from app.utils.get_current_user import get_current_user
 
 api = Namespace('role')
 role_schema = RoleSchema()
@@ -17,7 +18,7 @@ class RoleList(Resource):
     @api.doc(
         params={
             'q': 'query string for searching by name or status',
-            'order_by_field': 'exp: created_at/updated_at/id',
+            'order_by_field': 'exp: created_at/updated_at/id/name',
             'order_by': 'exp: desc/none',
             'limit': 'counter of how many items to fetch',
             'offset': 'counter from whome position it will start',
@@ -30,31 +31,14 @@ class RoleList(Resource):
         logger.info("Get all role")
 
         filter_object = {
-            'query_string': None,
-            'order_by_field': None,
-            'order_by': None,
-            'datefrom': None,
-            'dateto': None,
-            'limit': 0,
-            'offset': 0
+            'query_string': request.args.get('q', None),
+            'order_by_field': request.args.get('order_by_field', None),
+            'order_by': request.args.get('order_by', None),
+            'datefrom': request.args.get('datefrom', None),
+            'dateto': request.args.get('dateto', None),
+            'limit': request.args.get('limit', 0),
+            'offset': request.args.get('offset', 0)
         }
-
-        if request.args.get('q'):
-            filter_object['query_string'] = request.args.get('q')
-        if request.args.get('order_by_field'):
-            filter_object['order_by_field'] = request.args.get('order_by_field')
-        if request.args.get('order_by'):
-            filter_object['order_by'] = request.args.get('order_by')
-
-        if request.args.get('limit'):
-            filter_object['limit'] = request.args.get('limit')
-        if request.args.get('offset'):
-            filter_object['offset'] = request.args.get('offset')
-
-        if request.args.get('datefrom'):
-            filter_object['datefrom'] = request.args.get('datefrom')
-        if request.args.get('dateto'):
-            filter_object['dateto'] = request.args.get('dateto')
 
         roles = Role.get_roles(filter_object)
 
@@ -75,6 +59,8 @@ class RoleList(Resource):
         if not json_data:
             return {'message': 'No input data provided'}, 400
         logger.info("Insert a role", data=json_data)
+        json_data['created_by'] = get_current_user()
+        json_data['updated_by'] = get_current_user()
         # Validate and deserialize input
         role, errors = role_schema.load(json_data)
         if errors:
@@ -115,11 +101,13 @@ class RoleDetail(Resource):
         if not json_data:
             return {'message': 'No input data provided'}, 400
 
+        json_data['updated_by'] = get_current_user()
+
         role, errors = role_schema.load(json_data, instance=role_obj, partial=True)
         if errors:
             logger.warning("Update role error", data=errors)
             return errors, 422
-        # print(role)
+
         role.save()
         result = role_schema.dump(role).data
         return {'status': 'success', 'data': result}, 201

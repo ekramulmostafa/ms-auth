@@ -9,7 +9,11 @@ from marshmallow import fields, post_load, validates, ValidationError, Schema
 
 from app.models import ma
 from app.models.users import Users
+
 from app.serializers.verification_codes import VerificationCodesModelSchema
+
+from app.models.role import RoleSchema
+
 
 DATE_FORMAT = '%Y-%m-%d'
 
@@ -25,6 +29,7 @@ class UsersModelSchema(ma.ModelSchema):
     verified_at = fields.DateTime(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
+    roles = fields.Nested(RoleSchema, many=True)
 
     class Meta:
         """Meta class"""

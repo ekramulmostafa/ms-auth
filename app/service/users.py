@@ -22,11 +22,13 @@ from app.utils.utils import send_email
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
 
+
 logger = Logger(__name__)
 
 
 class UsersServices:
     """User services to call internally"""
+
     def get_all_users(self, params=None):
         """
             GET all users
