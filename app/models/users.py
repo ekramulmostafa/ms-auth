@@ -5,7 +5,8 @@ import uuid
 
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_utils import ChoiceType
-
+from app.models.user_role import UserRole
+from app.models.role import Role
 from . import db
 
 
@@ -37,9 +38,24 @@ class Users(db.Model):
     updated_at = db.Column(db.DateTime,
                            default=datetime.datetime.utcnow,
                            onupdate=datetime.datetime.utcnow)
+    roles = db.relationship(Role, secondary=UserRole.__tablename__, backref=db.backref('users'))
 
     def save(self, commit=True):
         """save method"""
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def save_user_role(self, role, commit=True):
+        """save method"""
+        self.roles.append(role)
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def edit_user_role(self, role, commit=True):
+        """ edit user """
+        self.roles.append(role)
         db.session.add(self)
         if commit is True:
             db.session.commit()
