@@ -4,6 +4,9 @@ import uuid
 from sqlalchemy import desc, asc, or_
 from sqlalchemy import inspect
 from sqlalchemy.dialects.postgresql import UUID
+from marshmallow import fields
+from app.serializers.role_custom import RoleCustomSchema
+
 from . import db, ma
 
 
@@ -68,8 +71,10 @@ class Permission(db.Model):
 
 class PermissionSchema(ma.ModelSchema):
     """Permission Schema """
+    roles = fields.Nested(RoleCustomSchema, many=True)
+
     class Meta:
         """ Meta class """
         model = Permission
-        fields = ("id", "name", "code", "active", 'created_at', 'updated_at')
-        ordered = True
+        # fields = ("id", "name", "code", "active", 'created_at', 'updated_at')
+        # ordered = True
