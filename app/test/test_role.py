@@ -60,6 +60,10 @@ class RoleTests(BaseTest):
 
         self.assertEqual(json_response['name'], 'test_role_update')
 
+        # check readonly fields value changing
+        self.assertIsNotNone(json_response['updated_at'])
+        self.assertNotEqual(json_response['created_at'], json_response['updated_at'])
+
     def test_get_all_roles(self):
         """ Get all roles and also filtered roles """
         url = url_for('auth.role_role_list')

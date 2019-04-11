@@ -4,6 +4,9 @@ from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
+from marshmallow import fields
+from app.models.permission import PermissionSchema
+from app.models.role_permission import RolePermission
 from . import db, ma
 
 
@@ -15,10 +18,13 @@ class Role(db.Model):
     active = db.Column(db.Boolean(), nullable=False, default=True)
     created_by = db.Column(db.String(100), nullable=False)
     updated_by = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = db.Column(
-        db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+                           nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+                           onupdate=datetime.datetime.now, nullable=False)
+
+    permissions = db.relationship('Permission', secondary=RolePermission.__tablename__,
+                                  backref=db.backref('roles'))
 
     def __init__(self, **kwargs):
         """Initialization for role model"""
@@ -29,7 +35,14 @@ class Role(db.Model):
 
     def save(self, commit=True):
         """Save data for role model"""
-        self.updated_at = datetime.datetime.utcnow()
+
+        db.session.add(self)
+        if commit is True:
+            db.session.commit()
+
+    def save_role_permission(self, permission, commit=True):
+        """Relationship between role and permission"""
+        self.permissions.append(permission)
         db.session.add(self)
         if commit is True:
             db.session.commit()
@@ -70,27 +83,27 @@ class Role(db.Model):
     @classmethod
     def get_order_by_filter(cls, all_roles, filter_object):
         """Private method: Get Order by filter"""
-        if filter_object['order_by_field'] == "created_at":
+        if filter_object['order_by_field'] in Role.__dict__:
             if filter_object['order_by'] == "desc":
-                all_roles = all_roles.order_by(desc(Role.created_at))
+                all_roles = all_roles.order_by(desc(Role.__dict__[filter_object['order_by_field']]))
             else:
-                all_roles = all_roles.order_by(Role.created_at)
-        elif filter_object['order_by_field'] == "updated_at":
-            if filter_object['order_by'] == "desc":
-                all_roles = all_roles.order_by(desc(Role.updated_at))
-            else:
-                all_roles = all_roles.order_by(Role.updated_at)
-        elif filter_object['order_by_field'] == "id":
-            if filter_object['order_by'] == "desc":
-                all_roles = all_roles.order_by(desc(Role.id))
-            else:
-                all_roles = all_roles.order_by(Role.id)
+                all_roles = all_roles.order_by(Role.__dict__[filter_object['order_by_field']])
+
         return all_roles
 
 
 class RoleSchema(ma.ModelSchema):
     """Role model Schema"""
+    id = fields.String()
+    name = fields.String()
+    active = fields.Boolean()
+    created_by = fields.String()
+    updated_by = fields.String()
+    created_at = fields.String(dump_only=True)
+    updated_at = fields.String(dump_only=True)
+    permissions = fields.Nested(PermissionSchema, many=True)
+
     class Meta:
         """Role model meta"""
         model = Role
-        fields = ('id', 'active', 'name', 'created_by', 'updated_by')
+        fields = ('id', 'active', 'name', 'created_by', 'updated_by', 'created_at', 'updated_at')

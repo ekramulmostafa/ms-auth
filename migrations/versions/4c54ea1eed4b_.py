@@ -25,7 +25,7 @@ def upgrade():
                     sa.Column('active', sa.Boolean(), nullable=False),
                     sa.Column('created_by', sa.String(), nullable=True),
                     sa.Column('updated_by', sa.String(), nullable=True),
-                    sa.Column('update_at', sa.DateTime(), nullable=True),
+                    sa.Column('updated_at', sa.DateTime(), nullable=True),
                     sa.Column('created_at', sa.DateTime(), nullable=True),
                     sa.ForeignKeyConstraint(['role_id'], ['role.id'], ),
                     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
