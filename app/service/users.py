@@ -149,7 +149,7 @@ class UsersServices:
 
         if is_correct_password:
             payload = {
-                'exp': datetime.utcnow() + timedelta(days=1, seconds=5),
+                'exp': datetime.utcnow() + timedelta(days=1),
                 'iat': datetime.utcnow(),
                 'sub': str(user.id),
                 'roles': [str(role.id) for role in user.roles]
