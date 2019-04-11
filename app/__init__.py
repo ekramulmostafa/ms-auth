@@ -29,6 +29,9 @@ def create_app():
         app_manager.add_command('db', MigrateCommand)
         ma.init_app(flask_app)
 
+        from app.service import mail
+        mail.init_app(flask_app)
+
         from app.api import blueprint_api
         flask_app.register_blueprint(blueprint_api)
 

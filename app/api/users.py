@@ -49,3 +49,32 @@ class UserDetailAPI(Resource):
         """PUT for User API Update"""
         data = request.json
         return user_service.update(data['data'], uuid)
+
+
+@user_api.route('/forget-password/')
+class UserForgetPasswordAPI(Resource):
+    """User forget password functionality"""
+
+    def post(self):
+        """POST for User forget password"""
+        data = request.json
+        return user_service.forget_password(data['data'])
+
+
+@user_api.route('/verify/<string:code>/')
+class UserVerificationAPI(Resource):
+    """User verification functionality"""
+
+    def get(self, code):
+        """GET for User verification"""
+        return user_service.verify_user(code)
+
+
+@user_api.route('/password-reset/<string:code>/')
+class UserResetPasswordAPI(Resource):
+    """User reset password functionality"""
+
+    def post(self, code):
+        """POST for User reset password"""
+        data = request.json
+        return user_service.reset_password(data['data'], code)

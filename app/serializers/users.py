@@ -9,7 +9,11 @@ from marshmallow import fields, post_load, validates, ValidationError, Schema
 
 from app.models import ma
 from app.models.users import Users
+
+from app.serializers.verification_codes import VerificationCodesModelSchema
+
 from app.models.role import RoleSchema
+
 
 DATE_FORMAT = '%Y-%m-%d'
 
@@ -17,10 +21,12 @@ DATE_FORMAT = '%Y-%m-%d'
 class UsersModelSchema(ma.ModelSchema):
     """User model serializer"""
     id = fields.String(dump_only=True)
-    google_access_token = fields.String(load_only=True, required=False)
     birth_date = fields.Date(DATE_FORMAT)
     email = fields.Email(required=True)
     password = fields.String(load_only=True)
+    verifications = fields.Nested(VerificationCodesModelSchema, many=True, load_only=True)
+    verified = fields.Boolean(dump_only=True)
+    verified_at = fields.DateTime(dump_only=True)
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
     roles = fields.Nested(RoleSchema, many=True)
