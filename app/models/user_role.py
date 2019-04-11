@@ -7,12 +7,10 @@ from sqlalchemy.dialects.postgresql import UUID
 from app.helper.helper import created_or_updated_by
 from app.models import ma
 from . import db
-# from marshmallow import fields
 
 
 class UserRole(db.Model):
     """ User role model """
-    # __tablename__ = 'user_role'
     __table_args__ = (
         db.UniqueConstraint('user_id', 'role_id', name='unique_user_role'),
     )

@@ -20,9 +20,6 @@ class UserRole(Resource):
     def post(self):
         """ Add role to user """
         data = request.get_json(force=True)
-        # user = Users.query.get(data['user_id'])
-        # role = Role.query.get(data['role_id'])
-        # user.save_user_role(role)
         result_data, error = user_role_schema.load(data)
         if error:
             return error, 422
