@@ -1,16 +1,16 @@
 """User model"""
 
 import uuid
-from datetime import datetime
+
 from sqlalchemy_utils import ChoiceType
 
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.model_mixin import TimestampMixin
 
+from app.models.user_role import UserRole
 from app.models.role import Role
 
-from app.models.user_role import UserRole
 
 from . import db
 
@@ -36,20 +36,19 @@ class Users(TimestampMixin, db.Model):
 
     verified = db.Column(db.Boolean, nullable=False, default=False)
     verified_at = db.Column(db.DateTime, nullable=True)
-    verifications = db.relationship('VerificationCodes', backref='verified_user')
 
     status = db.Column(db.Integer, ChoiceType(STATUS), nullable=False, default=1)
     active = db.Column(db.Boolean, nullable=False, default=True)
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey('users.id', ondelete='CASCADE'))
-    updated_at = db.Column(db.DateTime,
-                           default=datetime.utcnow,
-                           onupdate=datetime.utcnow)
     roles = db.relationship(Role, secondary=UserRole.__tablename__, backref=db.backref('users'))
 
+    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
+    created_by_user = db.relationship("Users", foreign_keys=[created_by])
+
     def save(self, commit=True):
-        """save method"""
+        """ user save method"""
         db.session.add(self)
         if commit is True:
             db.session.commit()

@@ -22,7 +22,6 @@ DATE_FORMAT = '%Y-%m-%d'
 class UsersModelSchema(ma.ModelSchema):
     """User model serializer"""
     id = fields.String(dump_only=True)
-    google_access_token = fields.String(load_only=True, required=False)
     birth_date = fields.Date(DATE_FORMAT)
     email = fields.Email(required=True)
     password = fields.String(load_only=True)

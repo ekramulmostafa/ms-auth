@@ -52,32 +52,30 @@ class BaseTest(TestCase):
             'created_by': 'test_user1',
             'updated_by': 'test_user1'
         }
-        role_json_data = json.dumps(params)
+        role_json = json.dumps(params)
 
         response = self.client.post(
             url,
-            data=role_json_data,
+            data=role_json,
             content_type='application/json'
         )
-        response_data = json.loads(response.data.decode())
-        return response_data['data']
+        return response.json['data']
 
     def assign_role_to_user(self, user_id, role_id):
         """assign role to user helper method"""
-        url = url_for('auth.user_role_user_role')
+        url = url_for('auth.user-role_user_role')
         request_data = {
             "user_id": user_id,
             "role_id": role_id,
             "active": 1
         }
-        request_json_data = json.dumps(request_data)
+        request_json = json.dumps(request_data)
         response = self.client.post(
             url,
-            data=request_json_data,
+            data=request_json,
             content_type='application/json'
         )
-        response_data = json.loads(response.data.decode())
-        return response_data['data']
+        return response.json['data']
 
     def login(self):
         """login function"""

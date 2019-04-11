@@ -6,6 +6,9 @@ from app.models.user_role import UserRole, UserRoleSchema
 from app.models.role import Role, RoleSchema
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema
+from app.logging import Logger
+
+log = Logger(__name__)
 
 
 class TestUserRole(BaseTest):
@@ -24,11 +27,10 @@ class TestUserRole(BaseTest):
         role_schema = RoleSchema()
         result, error = role_schema.load(role)
         if error:
-            print(error)
-        data = result.save()
+            log.error('Role schema insert failed!', data=error)
+        result.save()
         data_json = role_schema.dump(result).data
         role_id = data_json['id']
-        print(data_json)
 
         # initial data to set
         user_data = {
@@ -44,11 +46,10 @@ class TestUserRole(BaseTest):
         user_schema = UsersModelSchema()
         user_result, error = user_schema.load(user_data)
         if error:
-            print(error)
+            log.error('Error at user schema load', data=error)
         result = user_result.save()
         result_data = user_schema.dump(user_result).data
         user_id = result_data['id']
-        print(result_data)
 
         # user role data
         user_role = {
@@ -58,17 +59,13 @@ class TestUserRole(BaseTest):
         }
         user_schema = UserRoleSchema()
         result, error = user_schema.load(user_role)
-        data = result.save()
-        print(user_schema.dump(data))
+        result.save()
 
     def test_get_user_role_by_uuid(self):
         """ get user_role by uuid """
 
         user_role = UserRole.query.all()
-        print(user_role[0].id)
-        print('user role test .... is ')
-        print(user_role[0].id)
-        url = url_for('auth.user_role_user_role_detail', uuid=user_role[0].id)
+        url = url_for('auth.user-role_user_role_detail', uuid=user_role[0].id)
         response = self.client.get(
             url
         )
@@ -84,7 +81,7 @@ class TestUserRole(BaseTest):
         role = Role.query.all()
         role_schema = RoleSchema()
         role_data = role_schema.dump(role[0]).data
-        url = url_for('auth.user_role_user_role_detail', uuid=user_role[0].id)
+        url = url_for('auth.user-role_user_role_detail', uuid=user_role[0].id)
         response = self.client.put(
             url,
             data=json.dumps(dict(
@@ -107,7 +104,7 @@ class TestUserRole(BaseTest):
         role_schema = RoleSchema()
         result, error = role_schema.load(role)
         if error:
-            print(error)
+            log.error('Error role schema loading', data=error)
         result.save()
         data_json = role_schema.dump(result).data
         role_id = data_json['id']
@@ -128,7 +125,7 @@ class TestUserRole(BaseTest):
         user_schema = UsersModelSchema()
         user_result, error = user_schema.load(user_data)
         if error:
-            print(error)
+            log.error('User schema load', error)
         user_result.save()
         result_data = user_schema.dump(user_result).data
         user_id = result_data['id']
@@ -148,7 +145,7 @@ class TestUserRole(BaseTest):
         json_user = user_schema.dump(user[1]).data
         user_id = json_user['id']
 
-        url = url_for('auth.user_role_user_role')
+        url = url_for('auth.user-role_user_role')
         response = self.client.post(
             url,
             data=json.dumps(dict(
@@ -171,7 +168,7 @@ class TestUserRole(BaseTest):
         role_id = json_role['id']
         json_user = user_schema.dump(user[0]).data
         user_id = json_user['id']
-        url = url_for('auth.user_role_user_role', uuid=user_role[0].id)
+        url = url_for('auth.user-role_user_role', uuid=user_role[0].id)
         response = self.client.put(
             url,
             data=json.dumps(dict(

@@ -12,10 +12,16 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
         'postgresql://postgres:12345678@localhost:5433/ms-auth'
-
     )
     LOG_LEVEL = logging.DEBUG
     JWT_SECRET_KEY = 'C5foBUCnYa9ZQuM17pArsMzYlA8HbjH9bwLC5FOeVwNqAxv8rW'
+
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 465
+    MAIL_USERNAME = 'rifat.bongotest@gmail.com'
+    MAIL_PASSWORD = 'rifattest123'
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
 
 
 class DevelopmentConfig(Config):
@@ -27,6 +33,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     """Test config."""
+
     DEBUG = True
     TESTING = True
     PRESERVE_CONTEXT_ON_EXCEPTION = False
@@ -36,6 +43,8 @@ class TestingConfig(Config):
         'postgresql://postgres:12345678@localhost:5433/ms-auth'
     )
     SQLALCHEMY_DATABASE_URI = '{}-test'.format(SQLALCHEMY_DATABASE_URI)
+
+    MAIL_SUPPRESS_SEND = True
 
 
 class StagingConfig(Config):

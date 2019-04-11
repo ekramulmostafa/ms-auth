@@ -1,24 +1,26 @@
 """User service and required helper methods"""
 
 from smtplib import SMTPException
+
 from datetime import datetime, timedelta
+from uuid import uuid4
 
-from flask import current_app as app
-
-
+from jinja2 import TemplateNotFound
 from sqlalchemy import or_
 from sqlalchemy import cast, DATE
 from sqlalchemy.orm.exc import NoResultFound
 
+from flask import current_app as app, render_template
+
 from app.models import db
 from app.models.users import Users
-
 from app.models.verification_codes import VerificationCodes
 
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
-from app.utils.utils import send_email, generate_random_string, \
-    save_verification_code, decode_auth_token, encode_auth_token, check_password
+
+from app.utils.utils import send_email, decode_auth_token, encode_auth_token, check_password
+
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -109,7 +111,7 @@ class UsersServices:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
         result_data.save()
         response_data = user_schema.dump(result_data).data
-        save_verification_code(user=result_data, types=2, status=1)
+        VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
         return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
     def update(self, data: dict, uuid):
@@ -164,32 +166,35 @@ class UsersServices:
     def forget_password(self, data: dict):
         """forget password"""
         user = None
-        result_data_keys = list(data.keys())
-        if 'email' in result_data_keys:
+        if 'email' in data:
             user = Users.query.filter_by(email=data['email']).first()
-        elif 'phone' in result_data_keys:
+        elif 'phone' in data:
             user = Users.query.filter_by(phone=data['phone']).first()
 
         if not user:
-            return {'status': 'success', 'data': {}, 'message': 'No User found'}, 400
+            return {'status': 'error', 'data': {}, 'message': 'No User found'}, 400
 
-        reset_code = generate_random_string()
+        reset_code = uuid4()
         email_data = {
             "subject": "Forget Password",
             "sender": app.config.get('MAIL_USERNAME'),
             "recipients": [user.email],
-            "body": "your password reset code {0}".format(reset_code)
+            'html': render_template('reset_password.html', code=reset_code)
         }
         try:
             send_email(email_data)
-            self.update({"verification_code": reset_code}, uuid=str(user.id))
-            save_verification_code(user=user, code=reset_code, types=1, status=1)
+            VerificationCodes.save_verification_code(user=user, code=reset_code, types=1, status=1)
             return {'status': 'success',
                     'data': {},
                     'message': 'A password reset code has been sent to email address'
                     }, 200
+        except TemplateNotFound:
+            return {'status': 'error',
+                    'data': {},
+                    'message': 'Email template not found'
+                    }, 400
         except SMTPException:
-            return {'status': 'success',
+            return {'status': 'error',
                     'data': {},
                     'message': 'sending email failed'
                     }, 400
@@ -199,27 +204,34 @@ class UsersServices:
         vc_obj = VerificationCodes.query.filter_by(code=verification_code,
                                                    types=2,
                                                    status=1).first()
-        user = vc_obj.verified_user
+        user = vc_obj.verified_user if vc_obj else None
         if user:
+            if vc_obj.expired_at and (vc_obj.expired_at < datetime.utcnow()):
+                return {'status': 'error',
+                        'data': {},
+                        'message': 'verification code has been expired'}, 400
             if user.verified:
                 return {'status': 'error', 'data': {}, 'message': 'User already verified'}, 400
             user.verified = True
             user.verified_at = datetime.utcnow()
-            db.session.commit()
             vc_obj.status = 2
             vc_obj.updated_by = str(vc_obj.user_id)
             db.session.commit()
             response_data = user_schema.dump(user).data
             return {'status': 'success', 'data': response_data, 'message': ''}, 200
-        return {'status': 'error', 'data': {}, 'message': 'user can not be verified'}, 400
+        return {'status': 'error', 'data': {}, 'message': 'user verification failed'}, 400
 
     def reset_password(self, data: dict, code=None):
         """user password reset"""
         vc_obj = VerificationCodes.query.filter_by(code=code,
                                                    types=1,
                                                    status=1).first()
-        user = vc_obj.verified_user
+        user = vc_obj.verified_user if vc_obj else None
         if user:
+            if vc_obj.expired_at and (vc_obj.expired_at < datetime.utcnow()):
+                return {'status': 'error',
+                        'data': {},
+                        'message': 'password reset code has been expired'}, 400
             self.update({
                 "password": data['password']
             }, uuid=str(user.id))
@@ -229,7 +241,7 @@ class UsersServices:
             return {'status': 'success',
                     'data': {},
                     'message': 'password updated successfully'}, 200
-        return {'status': 'error', 'data': {}, 'message': 'password can not be updated'}, 400
+        return {'status': 'error', 'data': {}, 'message': 'Reset password failed'}, 400
 
     def get_user_from_token(self, token=None):
         """
