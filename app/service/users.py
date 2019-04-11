@@ -19,7 +19,7 @@ from app.models.verification_codes import VerificationCodes
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
 
-from app.utils.utils import send_email, decode_auth_token, encode_auth_token, check_password
+from app.utils.utils import send_email, decode_auth_token, encode_auth_token
 
 
 user_schema = UsersModelSchema()
@@ -145,7 +145,7 @@ class UsersServices:
 
         is_correct_password = False
         if user:
-            is_correct_password = check_password(user.password, result_data['password'])
+            is_correct_password = Users.check_password(user.password, result_data['password'])
 
         if is_correct_password:
             payload = {
@@ -257,7 +257,7 @@ class UsersServices:
         """specific User update"""
 
         logger.info("current user password update", data={'uuid': str(user.id)})
-        is_correct_password = check_password(user.password, data['current_password'])
+        is_correct_password = Users.check_password(user.password, data['current_password'])
         if not is_correct_password:
             return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
 
