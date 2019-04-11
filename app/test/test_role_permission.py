@@ -84,10 +84,9 @@ class RolePermissionTests(BaseTest):
         self.assertNotEqual(created_at, updated_at)
 
         url = url_for('auth.role-permission_role_permission_list')
-        response = self.client.get(
-            url,
-            content_type='application/json'
-        )
+        response = self.client.get(url,
+                                   content_type='application/json'
+                                   )
         self.assertEqual(response.status_code, 200)
         self.assertGreaterEqual(len(response.json['data']), 1)
 
