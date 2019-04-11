@@ -66,8 +66,7 @@ class RolePermissionTests(BaseTest):
 
         role_permission = json.dumps(params)
         url = url_for('auth.role-permission_role_permission_detail',
-                      role_id=role_id,
-                      permission_id=permission_id)
+                      uuid=response.json['data']['id'])
 
         response = self.client.put(
             url,
@@ -83,6 +82,14 @@ class RolePermissionTests(BaseTest):
         updated_at = response.json['data']['updated_at']
         self.assertIsNotNone(updated_at)
         self.assertNotEqual(created_at, updated_at)
+
+        url = url_for('auth.role-permission_role_permission_list')
+        response = self.client.get(
+            url,
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(len(response.json['data']), 1)
 
 
 if __name__ == "__main__":
