@@ -6,7 +6,6 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy_utils import ChoiceType
 from app.models.user_role import UserRole
-from app.models.role import Role
 from . import db
 
 
