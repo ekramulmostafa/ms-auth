@@ -24,7 +24,7 @@ class UsersModelSchema(ma.ModelSchema):
     id = fields.String(dump_only=True)
     birth_date = fields.Date(DATE_FORMAT)
     email = fields.Email(required=True)
-    password = fields.String(load_only=True)
+    password = fields.String(load_only=True, required=True)
     verifications = fields.Nested(VerificationCodesModelSchema, many=True, load_only=True)
     verified = fields.Boolean(dump_only=True)
     verified_at = fields.DateTime(dump_only=True)
