@@ -4,6 +4,7 @@ import json
 from flask import url_for
 
 from app.test import BaseTest
+from app.utils.utils import decode_auth_token
 
 
 class CurrentUserTests(BaseTest):
@@ -14,7 +15,7 @@ class CurrentUserTests(BaseTest):
         url = url_for('auth.user_current_user_api')
         login_reponse = self.login()
         token = 'Bearer {0}'.format(login_reponse['token'])
-        user_id = login_reponse['user_id']
+        user_id = decode_auth_token(login_reponse['token'])['data']['sub']
         headers = {
             'Authorization': token
         }
@@ -56,7 +57,8 @@ class CurrentUserTests(BaseTest):
         """test current user update api"""
         login_reponse = self.login()
         token = 'Bearer {0}'.format(login_reponse['token'])
-        current_user = self.get_user(login_reponse['user_id'])
+        user_id = decode_auth_token(login_reponse['token'])['data']['sub']
+        current_user = self.get_user(user_id)
 
         user_partial_data = {
             "data": {
@@ -85,7 +87,8 @@ class CurrentUserTests(BaseTest):
         """test current user update api"""
         login_reponse = self.login()
         token = 'Bearer {0}'.format(login_reponse['token'])
-        current_user = self.get_user(login_reponse['user_id'])
+        user_id = decode_auth_token(login_reponse['token'])['data']['sub']
+        current_user = self.get_user(user_id)
 
         user_password_data = {
             "data": {
@@ -143,6 +146,6 @@ class CurrentUserTests(BaseTest):
             content_type='application/json'
         )
         self.assert200(user_response)
-        current_user = self.get_user(login_reponse['user_id'])
+        current_user = self.get_user(user_id)
         self.assertEqual(current_user['status'], 1)
         self.assertNotEqual(current_user['first_name'], 'test_user_new')

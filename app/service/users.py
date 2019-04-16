@@ -137,10 +137,10 @@ class UsersServices:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
 
         user = None
-        result_data_keys = list(result_data.keys())
-        if 'email' in result_data_keys:
+
+        if 'email' in result_data:
             user = Users.query.filter_by(email=data['email']).first()
-        elif 'phone' in result_data_keys:
+        elif 'phone' in result_data:
             user = Users.query.filter_by(phone=data['phone']).first()
 
         is_correct_password = False
@@ -157,7 +157,6 @@ class UsersServices:
             jwt_token = encode_auth_token(payload)
             return {'status': 'success',
                     'data': {
-                        'user_id': str(user.id),
                         'token': jwt_token
                     },
                     'message': ''}, 200
