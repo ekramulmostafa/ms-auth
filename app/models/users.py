@@ -2,6 +2,7 @@
 
 import uuid
 
+import flask_bcrypt
 from sqlalchemy_utils import ChoiceType
 
 from sqlalchemy.dialects.postgresql import UUID
@@ -10,6 +11,7 @@ from app.models.model_mixin import TimestampMixin
 
 from app.models.user_role import UserRole
 from app.models.role import Role
+
 
 from . import db
 
@@ -65,3 +67,16 @@ class Users(TimestampMixin, db.Model):
         db.session.add(self)
         if commit is True:
             db.session.commit()
+
+    @staticmethod
+    def generate_password(password):
+        """generate password"""
+        password_hash = flask_bcrypt.generate_password_hash(password).decode('utf-8')
+        return password_hash
+
+    @staticmethod
+    def check_password(password_hash, password):
+        """check password is correct"""
+        is_correct_password = flask_bcrypt.check_password_hash(password_hash,
+                                                               password)
+        return is_correct_password

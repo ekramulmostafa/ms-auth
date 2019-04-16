@@ -8,6 +8,7 @@ from dateutil.relativedelta import relativedelta
 from marshmallow import fields, post_load, validates, ValidationError, Schema
 
 from app.models import ma
+
 from app.models.users import Users
 
 from app.serializers.verification_codes import VerificationCodesModelSchema
@@ -23,7 +24,7 @@ class UsersModelSchema(ma.ModelSchema):
     id = fields.String(dump_only=True)
     birth_date = fields.Date(DATE_FORMAT)
     email = fields.Email(required=True)
-    password = fields.String(load_only=True)
+    password = fields.String(load_only=True, required=True)
     verifications = fields.Nested(VerificationCodesModelSchema, many=True, load_only=True)
     verified = fields.Boolean(dump_only=True)
     verified_at = fields.DateTime(dump_only=True)
@@ -72,6 +73,18 @@ class UsersModelSchema(ma.ModelSchema):
         if difference_in_years < age_limit:
             raise ValidationError('User should be greater than 5')
 
+    @validates('phone')
+    def validate_phone(self, phone):
+        """validate phone"""
+        user = Users.query.filter(Users.phone == phone).count()
+        if self.instance:
+            if self.instance.phone != phone:
+                if user > 0:
+                    raise ValidationError('A registered user found with this phone')
+        else:
+            if user > 0:
+                raise ValidationError('A registered user found with this phone')
+
 
 class UsersFilterSerializer(Schema):
     """User filter parameter validation"""
@@ -99,3 +112,25 @@ class UsersFilterSerializer(Schema):
         if hasattr(data, 'updated_at') or ('updated_at' in list(data.keys())):
             data['updated_at'] = data['updated_at'].date()
         return data
+
+
+class UsersLoginSerializer(Schema):
+    """User login validation"""
+
+    email = fields.Email(required=False)
+    phone = fields.String(required=False)
+    password = fields.String(required=True)
+
+    @validates('email')
+    def validate_email(self, email):
+        """validate email"""
+        user = Users.query.filter(Users.email == email).count()
+        if user < 1:
+            raise ValidationError('No registered user found with this email')
+
+    @validates('phone')
+    def validate_phone(self, phone):
+        """validate phone"""
+        user = Users.query.filter(Users.phone == phone).count()
+        if user < 1:
+            raise ValidationError('No registered user found with this phone')

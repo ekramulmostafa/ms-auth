@@ -25,7 +25,7 @@ class UserRole(Resource):
             return error, 422
         result_data.save()
         user_role = user_role_schema.dump(result_data).data
-        return {'status': 'success', 'result': user_role}, 200
+        return {'status': 'success', 'data': user_role}, 200
 
     def put(self):
         """ Update active and inactive role for users """
@@ -36,7 +36,7 @@ class UserRole(Resource):
             return error, 400
         result_data.save()
         result = user_role_schema.dump(result_data).data
-        return {'status': 'success', 'result': result}, 200
+        return {'status': 'success', 'data': result}, 200
 
 
 @api.route('/<uuid:uuid>/')

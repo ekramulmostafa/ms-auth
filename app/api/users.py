@@ -1,10 +1,11 @@
 """User API"""
 
-from flask import request
+from flask import request, session
 from flask_restplus import Namespace, Resource
 
 from app.models.users import Users
 from app.service.users import UsersServices
+from app.utils.decorator import token_required
 
 user_api = Namespace('user')
 user_service = UsersServices()
@@ -51,6 +52,16 @@ class UserDetailAPI(Resource):
         return user_service.update(data['data'], uuid)
 
 
+@user_api.route('/login/')
+class UserLoginAPI(Resource):
+    """User details functionality"""
+
+    def post(self):
+        """login user"""
+        json_data = request.get_json(force=True)
+        return user_service.login(json_data['data'])
+
+
 @user_api.route('/forget-password/')
 class UserForgetPasswordAPI(Resource):
     """User forget password functionality"""
@@ -64,7 +75,6 @@ class UserForgetPasswordAPI(Resource):
 @user_api.route('/verify/<string:code>/')
 class UserVerificationAPI(Resource):
     """User verification functionality"""
-
     def get(self, code):
         """GET for User verification"""
         return user_service.verify_user(code)
@@ -78,3 +88,32 @@ class UserResetPasswordAPI(Resource):
         """POST for User reset password"""
         data = request.json
         return user_service.reset_password(data['data'], code)
+
+
+@user_api.route('/current-user/')
+class CurrentUserAPI(Resource):
+    """Current User functionality"""
+    @token_required
+    def get(self):
+        """GET for current user"""
+        user = session.pop('current_user', None)
+        return user_service.get_user_details(uuid=str(user.id))
+
+    @token_required
+    def put(self):
+        """PUT for Current User API Update"""
+        data = request.json
+        user = session.pop('current_user', None)
+        data['data']['updated_by'] = user.id
+        return user_service.update(data['data'], uuid=str(user.id))
+
+
+@user_api.route('/current-user/update-password/')
+class CurrentUserUpdatePasswordAPI(Resource):
+    """Current User only password update functionality"""
+    @token_required
+    def put(self):
+        """PUT for Current User API Update"""
+        data = request.json
+        user = session.pop('current_user', None)
+        return user_service.update_password(data['data'], user=user)

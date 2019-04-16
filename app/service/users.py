@@ -1,7 +1,8 @@
 """User service and required helper methods"""
 
 from smtplib import SMTPException
-from datetime import datetime
+
+from datetime import datetime, timedelta
 from uuid import uuid4
 
 from jinja2 import TemplateNotFound
@@ -15,9 +16,11 @@ from app.models import db
 from app.models.users import Users
 from app.models.verification_codes import VerificationCodes
 
-from app.serializers.users import UsersModelSchema, UsersFilterSerializer
+from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
-from app.utils.utils import send_email
+
+from app.utils.utils import send_email, decode_auth_token, encode_auth_token
+
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
@@ -126,6 +129,39 @@ class UsersServices:
         response_data = user_schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
 
+    def login(self, data: dict):
+        """ user login"""
+        login_schema = UsersLoginSerializer()
+        result_data, errors = login_schema.load(data)
+        if errors:
+            return {'status': 'error', 'data': {}, 'message': errors}, 422
+
+        user = None
+
+        if 'email' in result_data:
+            user = Users.query.filter_by(email=data['email']).first()
+        elif 'phone' in result_data:
+            user = Users.query.filter_by(phone=data['phone']).first()
+
+        is_correct_password = False
+        if user:
+            is_correct_password = Users.check_password(user.password, result_data['password'])
+
+        if is_correct_password:
+            payload = {
+                'exp': datetime.utcnow() + timedelta(days=1),
+                'iat': datetime.utcnow(),
+                'sub': str(user.id),
+                'roles': [str(role.id) for role in user.roles]
+            }
+            jwt_token = encode_auth_token(payload)
+            return {'status': 'success',
+                    'data': {
+                        'token': jwt_token
+                    },
+                    'message': ''}, 200
+        return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
+
     def forget_password(self, data: dict):
         """forget password"""
         user = None
@@ -205,3 +241,31 @@ class UsersServices:
                     'data': {},
                     'message': 'password updated successfully'}, 200
         return {'status': 'error', 'data': {}, 'message': 'Reset password failed'}, 400
+
+    def get_user_from_token(self, token=None):
+        """
+        get user from token
+        response : object
+        """
+        token = token.split(' ')[1]
+        jwt_resp = decode_auth_token(token)['data']
+        user = Users.query.filter_by(id=jwt_resp['sub']).first()
+        return user
+
+    def update_password(self, data: dict, user=None):
+        """specific User update"""
+
+        logger.info("current user password update", data={'uuid': str(user.id)})
+        is_correct_password = Users.check_password(user.password, data['current_password'])
+        if not is_correct_password:
+            return {'status': 'error', 'data': {}, 'message': 'Incorrect password'}, 400
+
+        response = self.update({
+            "password": data['new_password'],
+            "updated_by": str(user.id)
+        }, uuid=str(user.id))
+        if response[1] != 200:
+            return {'status': 'error', 'data': {}, 'message': 'password can not be updated'}, 400
+        return {'status': 'success',
+                'data': {},
+                'message': 'password updated successfully'}, 200
