@@ -7,10 +7,11 @@ from sqlalchemy import desc, or_, and_
 from marshmallow import fields
 from app.models.permission import PermissionSchema
 from app.models.role_permission import RolePermission
+from app.models.base_model import BaseModel
 from . import db, ma
 
 
-class Role(db.Model):
+class Role(BaseModel):
     """Description for role model"""
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -18,10 +19,10 @@ class Role(db.Model):
     active = db.Column(db.Boolean(), nullable=False, default=True)
     created_by = db.Column(db.String(100), nullable=False)
     updated_by = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
-                           nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
-                           onupdate=datetime.datetime.now, nullable=False)
+    # created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+    #                        nullable=False)
+    # updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+    #                        onupdate=datetime.datetime.now, nullable=False)
 
     permissions = db.relationship('Permission', secondary=RolePermission.__tablename__,
                                   backref=db.backref('roles'))
@@ -33,12 +34,12 @@ class Role(db.Model):
         self.created_by = kwargs.get('created_by')
         self.updated_by = kwargs.get('updated_by')
 
-    def save(self, commit=True):
-        """Save data for role model"""
+    # def save(self, commit=True):
+    #     """Save data for role model"""
 
-        db.session.add(self)
-        if commit is True:
-            db.session.commit()
+    #     db.session.add(self)
+    #     if commit is True:
+    #         db.session.commit()
 
     def save_role_permission(self, permission, commit=True):
         """Relationship between role and permission"""
