@@ -3,6 +3,7 @@
 from flask import request, session
 from flask_restplus import Namespace, Resource
 
+from app.api.base import ResourceAll, ResourceDetails
 from app.models.users import Users
 from app.service.users import UsersServices
 from app.utils.decorator import token_required
@@ -117,3 +118,14 @@ class CurrentUserUpdatePasswordAPI(Resource):
         data = request.json
         user = session.pop('current_user', None)
         return user_service.update_password(data['data'], user=user)
+
+
+@user_api.route('/log/')
+class LogAPI(ResourceAll):
+    """User verification functionality"""
+
+
+@user_api.route('/log/<string:value>/')
+class LogDetailsAPI(ResourceDetails):
+    """User verification functionality"""
+
