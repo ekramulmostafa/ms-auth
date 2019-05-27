@@ -4,6 +4,7 @@ from flask_restplus import Namespace, Resource
 from app.logging import Logger
 from app.models.role import Role, RoleSchema
 from app.utils.get_current_user import get_current_user
+from app.service.role_service import RoleService
 
 api = Namespace('role')
 role_schema = RoleSchema()
@@ -40,8 +41,12 @@ class RoleList(Resource):
             'offset': request.args.get('offset', 0)
         }
 
-        roles = Role.get_roles(filter_object)
+        # roles = Role.get_roles(filter_object)
 
+        # result = roles_schema.dump(roles)
+        # return jsonify(result.data)
+        role_service = RoleService()
+        roles = role_service.get_all(filter_object)
         result = roles_schema.dump(roles)
         return jsonify(result.data)
 
