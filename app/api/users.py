@@ -121,12 +121,13 @@ class CurrentUserUpdatePasswordAPI(Resource):
 
 
 @user_api.route('/log/')
-class LogAPI(ResourceAll):
-    """User verification functionality"""
+class TestBaseAPI(ResourceAll):
+    """Test Base functionality"""
 
 
 @user_api.route('/log/<string:value>/')
-class LogDetailsAPI(ResourceDetails):
-    """User verification functionality"""
+class TestBaseDetailsAPI(ResourceDetails):
+    """Test Base details functionality"""
     class Meta:
+        """meta class"""
         service = UsersServices()

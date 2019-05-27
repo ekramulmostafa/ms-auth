@@ -19,12 +19,10 @@ from app.models.verification_codes import VerificationCodes
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
 
-from app.utils.utils import send_email, decode_auth_token, encode_auth_token
-
+from app.utils.utils import send_email, decode_auth_token, encode_auth_token, response_generator
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
-
 
 logger = Logger(__name__)
 
@@ -277,9 +275,9 @@ class UsersServices:
         try:
             user = Users.query.get(uuid)
             if not user:
-                return {'status': 'error', 'data': {}, 'message': 'No user found'}, 400
+                return response_generator(status='error', data={}, message='No user found'), 400
             response_data = user_schema.dump(user)
-            return {'status': 'success', 'data': response_data.data, 'message': ''}, 200
+            return response_generator(status='success', data=response_data.data, message=''), 400
         except NoResultFound as ex:
             logger.warning("User no result found", data=str(ex))
-            return {'status': 'error', 'data': {}, 'message': str(ex)}, 400
+            return response_generator(status='error', data={}, message=str(ex)), 400
