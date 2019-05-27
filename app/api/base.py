@@ -18,6 +18,7 @@ class ResourceAll(BaseResource):
 
 
 class ResourceDetails(BaseResource):
+
     def get(self, value):
-        print(value)
-        pass
+        service = self.Meta.service
+        return service.get(value)

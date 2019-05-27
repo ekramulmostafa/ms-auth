@@ -269,3 +269,17 @@ class UsersServices:
         return {'status': 'success',
                 'data': {},
                 'message': 'password updated successfully'}, 200
+
+    def get(self, uuid):
+        """User details method"""
+
+        logger.info("User Detail get", data={'uuid': str(uuid)})
+        try:
+            user = Users.query.get(uuid)
+            if not user:
+                return {'status': 'error', 'data': {}, 'message': 'No user found'}, 400
+            response_data = user_schema.dump(user)
+            return {'status': 'success', 'data': response_data.data, 'message': ''}, 200
+        except NoResultFound as ex:
+            logger.warning("User no result found", data=str(ex))
+            return {'status': 'error', 'data': {}, 'message': str(ex)}, 400

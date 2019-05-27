@@ -128,4 +128,5 @@ class LogAPI(ResourceAll):
 @user_api.route('/log/<string:value>/')
 class LogDetailsAPI(ResourceDetails):
     """User verification functionality"""
-
+    class Meta:
+        service = UsersServices()
