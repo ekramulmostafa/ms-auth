@@ -33,18 +33,21 @@ class RoleList(Resource):
 
         filter_object = {
             'query_string': request.args.get('q', None),
-            'order_by_field': request.args.get('order_by_field', None),
-            'order_by': request.args.get('order_by', None),
-            'datefrom': request.args.get('datefrom', None),
-            'dateto': request.args.get('dateto', None),
+            # 'order_by_field': request.args.get('order_by_field', None),
+            # 'order_by': request.args.get('order_by', None),
+            # 'datefrom': request.args.get('datefrom', None),
+            # 'dateto': request.args.get('dateto', None),
             'limit': request.args.get('limit', 0),
-            'offset': request.args.get('offset', 0)
+            'offset': request.args.get('offset', 0),
+            'created_at': request.args.get('created_at', None),
+            'active': request.args.get('active', None)
         }
 
         # roles = Role.get_roles(filter_object)
 
         # result = roles_schema.dump(roles)
         # return jsonify(result.data)
+        # print(filter_object['date'])
         role_service = RoleService()
         roles = role_service.get_all(filter_object)
         result = roles_schema.dump(roles)

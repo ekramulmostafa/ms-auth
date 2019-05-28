@@ -9,3 +9,4 @@ class RoleService(BaseService):
         __model__ = Role
         __searchable__ = ['name']
         __sortable__ = ['id', '!created_at', 'updated_at']
+        __filterable__ = ['active', 'created_at', 'updated_at']
