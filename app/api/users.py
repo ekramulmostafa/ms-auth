@@ -123,6 +123,9 @@ class CurrentUserUpdatePasswordAPI(Resource):
 @user_api.route('/log/')
 class TestBaseAPI(ResourceAll):
     """Test Base functionality"""
+    class Meta:
+        """meta class"""
+        service = UsersServices()
 
 
 @user_api.route('/log/<string:value>/')

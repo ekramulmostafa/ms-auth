@@ -11,9 +11,16 @@ class BaseResource(Resource):
 
 class ResourceAll(BaseResource):
     """Resource for generic """
+
+    class Meta:
+        """Meta class"""
+        service = None
+
     def get(self):
         """get for generic"""
-        print("GET")
+        service = self.Meta.service
+        users = service.get()
+        return users
 
     def post(self):
         """post for generic"""

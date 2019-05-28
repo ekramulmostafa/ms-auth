@@ -268,16 +268,17 @@ class UsersServices:
                 'data': {},
                 'message': 'password updated successfully'}, 200
 
-    def get(self, uuid):
+    def get_all(self):
+        """User get all"""
+        logger.info("User list get")
+        all_users = Users.query.all()
+        result = users_schema.dump(all_users)
+        return response_generator(status='success', data=result, message=''), 200
+
+    def get(self, uuid=None):
         """User details method"""
 
-        logger.info("User Detail get", data={'uuid': str(uuid)})
-        try:
-            user = Users.query.get(uuid)
-            if not user:
-                return response_generator(status='error', data={}, message='No user found'), 400
-            response_data = user_schema.dump(user)
-            return response_generator(status='success', data=response_data.data, message=''), 400
-        except NoResultFound as ex:
-            logger.warning("User no result found", data=str(ex))
-            return response_generator(status='error', data={}, message=str(ex)), 400
+        if uuid:
+            return self.get_user_details(uuid)
+        else:
+            return self.get_all()
