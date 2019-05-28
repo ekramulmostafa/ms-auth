@@ -19,8 +19,7 @@ class ResourceAll(BaseResource):
     def get(self):
         """get for generic"""
         service = self.Meta.service
-        users = service.get()
-        return users
+        return service.get()
 
     def post(self):
         """post for generic"""
@@ -36,7 +35,12 @@ class ResourceDetails(BaseResource):
         """Meta class"""
         service = None
 
-    def get(self, value):
+    def get(self, uuid):
         """ get for details """
         service = self.Meta.service
-        return service.get(value)
+        return service.get(uuid)
+
+    def put(self, uuid=None):
+        service = self.Meta.service
+        data = request.json
+        return service.put(data['data'], uuid)

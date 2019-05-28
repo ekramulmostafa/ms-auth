@@ -285,3 +285,7 @@ class UsersServices:
 
     def post(self, data: dict):
         return self.create(data)
+
+    def put(self, data=None, uuid=None):
+        if uuid:
+            return self.update(data, uuid)

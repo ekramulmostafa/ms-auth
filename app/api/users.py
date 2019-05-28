@@ -128,7 +128,7 @@ class TestBaseAPI(ResourceAll):
         service = UsersServices()
 
 
-@user_api.route('/log/<string:value>/')
+@user_api.route('/log/<uuid:uuid>/')
 class TestBaseDetailsAPI(ResourceDetails):
     """Test Base details functionality"""
     class Meta:
