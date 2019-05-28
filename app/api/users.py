@@ -3,7 +3,7 @@
 from flask import request, session
 from flask_restplus import Namespace, Resource
 
-from app.api.base import ResourceAll, ResourceDetails
+from app.api.base import DefaultResource
 from app.models.users import Users
 from app.service.users import UsersServices
 from app.utils.decorator import token_required
@@ -121,7 +121,7 @@ class CurrentUserUpdatePasswordAPI(Resource):
 
 
 @user_api.route('/log/')
-class TestBaseAPI(ResourceAll):
+class TestBaseAPI(DefaultResource):
     """Test Base functionality"""
     class Meta:
         """meta class"""
@@ -129,7 +129,7 @@ class TestBaseAPI(ResourceAll):
 
 
 @user_api.route('/log/<uuid:uuid>/')
-class TestBaseDetailsAPI(ResourceDetails):
+class TestBaseDetailsAPI(DefaultResource):
     """Test Base details functionality"""
     class Meta:
         """meta class"""

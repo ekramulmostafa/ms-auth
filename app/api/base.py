@@ -8,37 +8,36 @@ class BaseResource(Resource):
     """Resource base class"""
     __abstract__ = True
 
-
-class ResourceAll(BaseResource):
-    """Resource for generic """
-
     class Meta:
         """Meta class"""
         service = None
 
-    def get(self):
-        """get for generic"""
-        service = self.Meta.service
-        return service.get()
+    def get(self, uuid=None):
+        pass
+
+    def post(self):
+        pass
+
+    def put(self, uuid=None):
+        pass
+
+
+class DefaultResource(BaseResource):
+    """Resource for generic """
 
     def post(self):
         """post for generic"""
         service = self.Meta.service
-        json_data = request.get_json(force=True)
-        return service.post(json_data['data'])
+        data = request.get_json(force=True)
+        return service.post(data['data'])
 
-
-class ResourceDetails(BaseResource):
-    """ resource for details """
-
-    class Meta:
-        """Meta class"""
-        service = None
-
-    def get(self, uuid):
+    def get(self, uuid=None):
         """ get for details """
         service = self.Meta.service
-        return service.get(uuid)
+        if uuid:
+            return service.get(uuid)
+        else:
+            return service.get()
 
     def put(self, uuid=None):
         service = self.Meta.service
