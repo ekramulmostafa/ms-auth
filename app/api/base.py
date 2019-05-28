@@ -24,8 +24,9 @@ class ResourceAll(BaseResource):
 
     def post(self):
         """post for generic"""
-        data = request.json
-        print(data)
+        service = self.Meta.service
+        json_data = request.get_json(force=True)
+        return service.post(json_data['data'])
 
 
 class ResourceDetails(BaseResource):

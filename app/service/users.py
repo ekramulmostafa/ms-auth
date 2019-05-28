@@ -282,3 +282,6 @@ class UsersServices:
             return self.get_user_details(uuid)
         else:
             return self.get_all()
+
+    def post(self, data: dict):
+        return self.create(data)
