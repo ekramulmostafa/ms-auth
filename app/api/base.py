@@ -13,12 +13,15 @@ class BaseResource(Resource):
         service = None
 
     def get(self, uuid=None):
+        """base get"""
         pass
 
     def post(self):
+        """base post"""
         pass
 
     def put(self, uuid=None):
+        """base put"""
         pass
 
 
@@ -40,6 +43,7 @@ class DefaultResource(BaseResource):
             return service.get()
 
     def put(self, uuid=None):
+        """put for update"""
         service = self.Meta.service
         data = request.json
         return service.put(data['data'], uuid)
