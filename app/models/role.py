@@ -34,13 +34,6 @@ class Role(BaseModel):
         self.created_by = kwargs.get('created_by')
         self.updated_by = kwargs.get('updated_by')
 
-    # def save(self, commit=True):
-    #     """Save data for role model"""
-
-    #     db.session.add(self)
-    #     if commit is True:
-    #         db.session.commit()
-
     def save_role_permission(self, permission, commit=True):
         """Relationship between role and permission"""
         self.permissions.append(permission)

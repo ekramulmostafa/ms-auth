@@ -16,6 +16,7 @@ logger = Logger(__name__)
 @api.route('')
 class RoleList(Resource):
     """Role list functionalities"""
+
     @api.doc(
         params={
             'q': 'query string for searching by name or status',
@@ -43,15 +44,16 @@ class RoleList(Resource):
             'active': request.args.get('active', None)
         }
 
-        # roles = Role.get_roles(filter_object)
+        param = {
+            'sortable': ['id', '!created_at', 'updated_at'],
+            'filterable': ['active', 'created_at', 'updated_at']
+        }
 
-        # result = roles_schema.dump(roles)
-        # return jsonify(result.data)
-        # print(filter_object['date'])
-        role_service = RoleService()
-        roles = role_service.get_all(filter_object)
-        result = roles_schema.dump(roles)
-        return jsonify(result.data)
+        role_service = RoleService(**param)
+
+        results = role_service.fetch(None, filter_object)
+
+        return jsonify(results.data)
 
     @api.doc(
         params={
@@ -62,6 +64,12 @@ class RoleList(Resource):
         })
     def post(self):
         """Insert a role"""
+        # param = {
+        #     'sortable': ['id', '!created_at', 'updated_at'],
+        #     'filterable': ['active', 'created_at', 'updated_at']
+        # }
+
+        # role_service = RoleService(**param)
 
         json_data = request.get_json(force=True)
         if not json_data:
@@ -69,13 +77,15 @@ class RoleList(Resource):
         logger.info("Insert a role", data=json_data)
         json_data['created_by'] = get_current_user()
         json_data['updated_by'] = get_current_user()
-        # Validate and deserialize input
-        role, errors = role_schema.load(json_data)
-        if errors:
-            logger.warning("Insert role error", data=errors)
-            return errors, 422
-        role.save()
-        result = role_schema.dump(role).data
+
+        param = {
+            'sortable': ['id', '!created_at', 'updated_at'],
+            'filterable': ['active', 'created_at', 'updated_at']
+        }
+
+        role_service = RoleService(**param)
+
+        result = role_service.create(json_data)
         return {'status': 'success', 'data': result}, 201
 
 
@@ -88,8 +98,15 @@ class RoleDetail(Resource):
         """Get a specific role by id"""
         logger.info("Get a specific role by Id", data=uuid)
 
-        role = Role.query.get(uuid)
-        return role_schema.jsonify(role)
+        param = {
+            'sortable': ['id', '!created_at', 'updated_at'],
+            'filterable': ['active', 'created_at', 'updated_at']
+        }
+
+        role_service = RoleService(**param)
+        # role = Role.query.get(uuid)
+        results = role_service.fetch(uuid)
+        return role_schema.jsonify(results)
 
     @api.doc(
         params={
@@ -99,11 +116,14 @@ class RoleDetail(Resource):
         })
     def put(self, uuid):
         """ Update role """
-        logger.info("Update role")
+        # param = {
+        #     'sortable': ['id', '!created_at', 'updated_at'],
+        #     'filterable': ['active', 'created_at', 'updated_at']
+        # }
 
-        role_obj = Role.query.get(uuid)
-        if role_obj is None:
-            return {'message': 'Role not found'}, 404
+        # role_service = RoleService(**param)
+
+        logger.info("Update role")
 
         json_data = request.get_json(force=True)
         if not json_data:
@@ -111,11 +131,12 @@ class RoleDetail(Resource):
 
         json_data['updated_by'] = get_current_user()
 
-        role, errors = role_schema.load(json_data, instance=role_obj, partial=True)
-        if errors:
-            logger.warning("Update role error", data=errors)
-            return errors, 422
+        param = {
+            'sortable': ['id', '!created_at', 'updated_at'],
+            'filterable': ['active', 'created_at', 'updated_at']
+        }
 
-        role.save()
-        result = role_schema.dump(role).data
-        return {'status': 'success', 'data': result}, 201
+        role_service = RoleService(**param)
+        result = role_service.update(uuid, json_data)
+
+        return {'status': 'success', 'data': result}, 200
