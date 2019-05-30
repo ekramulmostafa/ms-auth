@@ -8,6 +8,7 @@ from . import db
 
 class BaseModel(db.Model):
     """Description for base model"""
+    __abstract__ = True
 
     @declared_attr
     def created_by(self):

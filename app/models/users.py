@@ -8,7 +8,6 @@ from sqlalchemy_utils import ChoiceType
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.models.base_model import BaseModel
-from app.models.model_mixin import TimestampMixin
 
 from app.models.user_role import UserRole
 from app.models.role import Role
