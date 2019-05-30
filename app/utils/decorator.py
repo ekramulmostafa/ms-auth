@@ -3,7 +3,10 @@ from functools import wraps
 from flask import request, session
 
 from app.models.users import Users
+from app.serializers.users import UsersModelSchema
 from app.utils.utils import decode_auth_token
+
+user_schema = UsersModelSchema()
 
 
 def token_required(f):
@@ -30,15 +33,15 @@ def token_required(f):
                 }
                 return response_object, 401
             user = Users.query.filter_by(id=resp['data']['sub']).first()
-            if user:
-                session['current_user'] = user
-            else:
+            if not user:
                 response_object = {
                     'status': 'error',
                     'data': {},
                     'message': 'no user found with this token'
                 }
                 return response_object, 401
+            else:
+                session['current_user'] = user_schema.dump(user).data
         else:
             response_object = {
                 'status': 'error',

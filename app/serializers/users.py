@@ -28,6 +28,10 @@ class UsersModelSchema(ma.ModelSchema):
     verifications = fields.Nested(VerificationCodesModelSchema, many=True, load_only=True)
     verified = fields.Boolean(dump_only=True)
     verified_at = fields.DateTime(dump_only=True)
+
+    created_by = fields.String(load_only=True)
+    updated_by = fields.String(load_only=True)
+
     created_at = fields.DateTime(dump_only=True)
     updated_at = fields.DateTime(dump_only=True)
     roles = fields.Nested(RoleSchema, many=True)
