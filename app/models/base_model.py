@@ -8,9 +8,6 @@ from . import db
 
 class BaseModel(db.Model):
     """Description for base model"""
-    __abstract__ = True
-    __searchable__ = []
-    __filterable__ = {}
 
     @declared_attr
     def created_by(self):
