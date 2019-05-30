@@ -275,17 +275,10 @@ class UsersServices:
         result = users_schema.dump(all_users)
         return response_generator(status='success', data=result, message=''), 200
 
-    def get(self, uuid=None):
+    def fetch(self, uuid=None):
         """User details method"""
 
         if uuid:
             return self.get_user_details(uuid)
         else:
             return self.get_all()
-
-    def post(self, data: dict):
-        return self.create(data)
-
-    def put(self, data=None, uuid=None):
-        if uuid:
-            return self.update(data, uuid)

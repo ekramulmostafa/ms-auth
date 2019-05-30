@@ -34,21 +34,21 @@ class DefaultResource(BaseResource):
         """post for generic"""
         service = self.Meta.service
         data = request.get_json(force=True)
-        return service.post(data['data'])
+        return service.create(data['data'])
 
     def get(self, uuid=None):
         """ get for details """
         service = self.Meta.service
         if uuid:
-            return service.get(uuid)
+            return service.fetch(uuid)
         else:
-            return service.get()
+            return service.fetch()
 
     def put(self, uuid=None):
         """put for update"""
         service = self.Meta.service
         data = request.json
-        return service.put(data['data'], uuid)
+        return service.update(data['data'], uuid)
 
 
 class ProtectedResource(BaseResource):
@@ -62,16 +62,16 @@ class ProtectedResource(BaseResource):
         user = session['current_user']
         data['data']['created_by'] = user['id']
         data['data']['updated_by'] = user['id']
-        return service.post(data['data'])
+        return service.create(data['data'])
 
     @token_required
     def get(self, uuid=None):
         """ get where token is required"""
         service = self.Meta.service
         if uuid:
-            return service.get(uuid)
+            return service.fetch(uuid)
         else:
-            return service.get()
+            return service.fetch()
 
     @token_required
     def put(self, uuid=None):
@@ -80,4 +80,4 @@ class ProtectedResource(BaseResource):
         data = request.json
         user = session['current_user']
         data['data']['updated_by'] = user['id']
-        return service.put(data['data'], uuid)
+        return service.update(data['data'], uuid)
