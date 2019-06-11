@@ -37,8 +37,11 @@ def decode_auth_token(auth_token):
 
 def response_generator(status=None, data=None, message=None):
     """common response generator"""
-    if message is None:
+    if all(v is None for v in [status, data, message]):
+        status = 'error'
+        data = {}
         message = 'Internal Server Error'
+
     response = {
         'status': status or 'error',
         'data': data or {},
