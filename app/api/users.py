@@ -121,7 +121,7 @@ class CurrentUserUpdatePasswordAPI(Resource):
 
 
 @user_api.route('/log/')
-class TestBaseAPI(ProtectedResource):
+class TestBaseAPI(DefaultResource):
     """Test Base functionality"""
     class Meta:
         """meta class"""

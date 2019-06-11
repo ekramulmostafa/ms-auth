@@ -280,5 +280,5 @@ class UsersServices:
 
         if uuid:
             return self.get_user_details(uuid)
-        else:
-            return self.get_all()
+
+        return self.get_all()

@@ -40,8 +40,8 @@ def token_required(f):
                     'message': 'no user found with this token'
                 }
                 return response_object, 401
-            else:
-                session['current_user'] = user_schema.dump(user).data
+
+            session['current_user'] = user_schema.dump(user).data
         else:
             response_object = {
                 'status': 'error',

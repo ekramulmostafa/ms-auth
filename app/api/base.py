@@ -16,15 +16,12 @@ class BaseResource(Resource):
 
     def get(self, uuid=None):
         """base get"""
-        pass
 
     def post(self):
         """base post"""
-        pass
 
     def put(self, uuid=None):
         """base put"""
-        pass
 
 
 class DefaultResource(BaseResource):
@@ -41,8 +38,7 @@ class DefaultResource(BaseResource):
         service = self.Meta.service
         if uuid:
             return service.fetch(uuid)
-        else:
-            return service.fetch()
+        return service.fetch()
 
     def put(self, uuid=None):
         """put for update"""
@@ -70,8 +66,7 @@ class ProtectedResource(BaseResource):
         service = self.Meta.service
         if uuid:
             return service.fetch(uuid)
-        else:
-            return service.fetch()
+        return service.fetch()
 
     @token_required
     def put(self, uuid=None):
