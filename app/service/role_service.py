@@ -9,11 +9,7 @@ roles_schema = RoleSchema(many=True)
 class RoleService(BaseService):
     """ Role service """
     class Meta:
-        """ 
-            __searchable__ = fields in where checking the values
-            __sortable__ = if use ! operator it will do desc operation else asc operation in the fields
-            __filterable__ = fields for filtering ( operators are: rang(,) , >(_gt), <(_lt), >=(_gteq), <=(_lteq) . But for equals no need to use any operator, just (field = value) will be sufficent )
-        """
+        """ Meta data"""
         model = Role
         model_schema = role_schema
         models_schema = roles_schema

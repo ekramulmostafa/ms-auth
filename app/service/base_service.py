@@ -1,5 +1,5 @@
 """ Base service """
-from sqlalchemy import desc, or_, and_
+from sqlalchemy import desc
 
 
 class BaseService:
@@ -12,6 +12,7 @@ class BaseService:
     __abstract__ = True
 
     class Meta:
+        """ Meta base service """
         model = None
         model_schema = None
         models_schema = None
@@ -24,15 +25,14 @@ class BaseService:
         self.Meta.filterable = kwargs.get('filterable')
 
     def offsetLimit(self, results, values):
-        """ 
-            results offset limit 
-            limit and offset parameters needed for results to use limit, offset
-        """
+        """ results offset limit
+            limit and offset parameters needed for results to use limit, offset """
+
         limit = None
         offset = None
-        if 'limit' in values and values['limit'] != None:
+        if 'limit' in values and values['limit'] is not None:
             limit = values['limit']
-        if 'offset' in values and values['offset'] != None:
+        if 'offset' in values and values['offset'] is not None:
             offset = values['offset']
 
         if int(limit) > 0:
@@ -44,6 +44,7 @@ class BaseService:
 
     def orderByResults(self, results):
         """ order by results """
+
         Model = self.Meta.model
         sortable = self.Meta.sortable
 
@@ -64,7 +65,7 @@ class BaseService:
         filterable = self.Meta.filterable
 
         for key, val in values.items():
-            if (val != None and val != 0 and val != "") and self.__filterableFieldChecking(filterable, key):
+            if (val is not None and val != 0) and self.__filterableFieldChecking(filterable, key):
                 results = results.filter(self.__expressionReturn(Model, key, val))
 
         return results
@@ -114,10 +115,10 @@ class BaseService:
             result = self.getByUUID(uuid)
             result = self.Meta.model_schema.dump(result).data
             return result
-        else:
-            results = self.getByValues(values)
-            results = self.Meta.models_schema.dump(results)
-            return results
+
+        results = self.getByValues(values)
+        results = self.Meta.models_schema.dump(results)
+        return results
 
     def getByUUID(self, uuid):
         """ get by uuid """

@@ -1,5 +1,5 @@
 """Model for Role resource"""
-import datetime
+
 from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID

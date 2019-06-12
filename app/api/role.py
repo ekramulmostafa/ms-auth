@@ -2,7 +2,7 @@
 from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 from app.logging import Logger
-from app.models.role import Role, RoleSchema
+from app.models.role import RoleSchema
 from app.utils.get_current_user import get_current_user
 from app.service.role_service import RoleService
 

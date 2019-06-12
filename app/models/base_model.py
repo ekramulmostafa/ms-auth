@@ -1,7 +1,7 @@
 """Model for Base Model resource"""
 import datetime
 
-from . import db, ma
+from . import db
 
 
 class BaseModel(db.Model):
