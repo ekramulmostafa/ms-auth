@@ -109,17 +109,6 @@ class BaseService:
 
         return expression
 
-    def fetch(self, uuid=None, values=None):
-        """ Get """
-        if uuid:
-            result = self.getByUUID(uuid)
-            result = self.Meta.model_schema.dump(result).data
-            return result
-
-        results = self.getByValues(values)
-        results = self.Meta.models_schema.dump(results)
-        return results
-
     def getByUUID(self, uuid):
         """ get by uuid """
         Model = self.Meta.model
@@ -138,6 +127,17 @@ class BaseService:
 
         results = results.all()
 
+        return results
+
+    def fetch(self, uuid=None, values=None):
+        """ Get """
+        if uuid:
+            result = self.getByUUID(uuid)
+            result = self.Meta.model_schema.dump(result).data
+            return result
+
+        results = self.getByValues(values)
+        results = self.Meta.models_schema.dump(results)
         return results
 
     def create(self, json_data):

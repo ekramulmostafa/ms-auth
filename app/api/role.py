@@ -139,4 +139,4 @@ class RoleDetail(Resource):
         role_service = RoleService(**param)
         result = role_service.update(uuid, json_data)
 
-        return {'status': 'success', 'data': result}, 200
+        return {'status': 'success', 'data': result}, 201
