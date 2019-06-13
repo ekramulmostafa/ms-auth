@@ -13,6 +13,7 @@ class BaseResource(Resource):
     class Meta:
         """Meta class"""
         service = None
+        methods = None
 
     def get(self, uuid=None):
         """base get"""
@@ -27,24 +28,25 @@ class BaseResource(Resource):
 class DefaultResource(BaseResource):
     """Resource for generic """
 
+    def __init_subclass__(cls):
+        cls.meta_methods = getattr(cls.Meta, 'methods', None)
+        cls.meta_services = getattr(cls.Meta, 'service', None)
+
     def post(self):
         """post for generic"""
-        service = self.Meta.service
         data = request.get_json(force=True)
-        return service.create(data['data'])
+        return self.meta_services.create(data['data'])
 
     def get(self, uuid=None):
         """ get for details """
-        service = self.Meta.service
         if uuid:
-            return service.fetch(uuid)
-        return service.fetch()
+            return self.meta_services.fetch(uuid)
+        return self.meta_services.fetch()
 
     def put(self, uuid=None):
         """put for update"""
-        service = self.Meta.service
         data = request.json
-        return service.update(data['data'], uuid)
+        return self.meta_services.update(data['data'], uuid)
 
 
 class ProtectedResource(BaseResource):

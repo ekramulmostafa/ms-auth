@@ -126,6 +126,7 @@ class TestBaseAPI(DefaultResource):
     class Meta:
         """meta class"""
         service = UsersServices()
+        methods = ['GET', 'POST']
 
 
 @user_api.route('/log/<uuid:uuid>/')
