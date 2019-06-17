@@ -28,31 +28,33 @@ class BaseResource(Resource):
 class DefaultResource(BaseResource):
     """Resource for generic """
 
-    def __init_subclass__(cls):
-        cls.meta_methods = getattr(cls.Meta, 'methods', None)
-        cls.meta_services = getattr(cls.Meta, 'service', None)
-
     def post(self):
         """post for generic"""
-        if request.method not in self.meta_methods:
+        meth = getattr(self.Meta, 'methods', None)
+        if meth and not meth.__contains__(request.method):
             abort(405)
+
         data = request.get_json(force=True)
-        return self.meta_services.create(data['data'])
+        return self.Meta.service.create(data['data'])
 
     def get(self, uuid=None):
         """ get for details """
-        if request.method not in self.meta_methods:
+        meth = getattr(self.Meta, 'methods', None)
+        if meth and not meth.__contains__(request.method):
             abort(405)
+
         if uuid:
-            return self.meta_services.fetch(uuid)
-        return self.meta_services.fetch()
+            return self.Meta.service.fetch(uuid)
+        return self.Meta.service.fetch()
 
     def put(self, uuid=None):
         """put for update"""
-        if request.method not in self.meta_methods:
+        meth = getattr(self.Meta, 'methods', None)
+        if meth and not meth.__contains__(request.method):
             abort(405)
+
         data = request.json
-        return self.meta_services.update(data['data'], uuid)
+        return self.Meta.service.update(data['data'], uuid)
 
 
 class ProtectedResource(BaseResource):
@@ -61,32 +63,36 @@ class ProtectedResource(BaseResource):
     @token_required
     def post(self):
         """post where token is required"""
-        if request.method not in self.meta_methods:
+        meth = getattr(self.Meta, 'methods', None)
+        if meth and not meth.__contains__(request.method):
             abort(405)
-        service = self.Meta.service
+
         data = request.get_json(force=True)
         user = session['current_user']
         data['data']['created_by'] = user['id']
         data['data']['updated_by'] = user['id']
-        return service.create(data['data'])
+        return self.Meta.service.create(data['data'])
 
     @token_required
     def get(self, uuid=None):
         """ get where token is required"""
-        if request.method not in self.meta_methods:
+
+        meth = getattr(self.Meta, 'methods', None)
+        if meth and not meth.__contains__(request.method):
             abort(405)
-        service = self.Meta.service
+
         if uuid:
-            return service.fetch(uuid)
-        return service.fetch()
+            return self.Meta.service.fetch(uuid)
+        return self.Meta.service.fetch()
 
     @token_required
     def put(self, uuid=None):
         """put where token is required"""
-        if request.method not in self.meta_methods:
+        meth = getattr(self.Meta, 'methods', None)
+        if meth and (not meth.__contains__(request.method)):
             abort(405)
-        service = self.Meta.service
+
         data = request.json
         user = session['current_user']
         data['data']['updated_by'] = user['id']
-        return service.update(data['data'], uuid)
+        return self.Meta.service.update(data['data'], uuid)
