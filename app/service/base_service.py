@@ -24,7 +24,7 @@ class BaseService:
         self.Meta.sortable = kwargs.get('sortable')
         self.Meta.filterable = kwargs.get('filterable')
 
-    def offsetLimit(self, results, values):
+    def offset_limit(self, results, values):
         """ results offset limit
             limit and offset parameters needed for results to use limit, offset """
 
@@ -42,35 +42,36 @@ class BaseService:
             results = results.offset(offset)
         return results
 
-    def orderByResults(self, results):
+    def order_by_results(self, results):
         """ order by results """
 
-        Model = self.Meta.model
+        model = self.Meta.model
         sortable = self.Meta.sortable
 
         for field in sortable:
             if field.find('!') == 0:
                 field = field.lstrip('!')
-                if field in Model.__dict__:
-                    results = results.order_by(desc(Model.__dict__[field]))
+                if field in model.__dict__:
+                    results = results.order_by(desc(model.__dict__[field]))
             else:
-                if field in Model.__dict__:
-                    results = results.order_by(Model.__dict__[field])
+                if field in model.__dict__:
+                    results = results.order_by(model.__dict__[field])
 
         return results
 
-    def filterByResults(self, results, values):
+    def filter_by_results(self, results, values):
         """ fitler by results """
-        Model = self.Meta.model
+        model = self.Meta.model
         filterable = self.Meta.filterable
 
         for key, val in values.items():
-            if (val is not None and val != 0) and self.__filterableFieldChecking(filterable, key):
-                results = results.filter(self.__expressionReturn(Model, key, val))
+            if (val is not None and val != 0) and self.__filterable_field_checking(filterable, key):
+                results = results.filter(self.__expression_return(model, key, val))
 
         return results
 
-    def __filterableFieldChecking(self, filterable, key_value_pair):
+    @staticmethod
+    def __filterable_field_checking(filterable, key_value_pair):
         """ filterableFieldChecking """
 
         for field in filterable:
@@ -78,7 +79,8 @@ class BaseService:
                 return True
         return False
 
-    def __expressionReturn(self, Model, field, val):
+    @staticmethod
+    def __expression_return(model, field, val):
         """
             filter fields of the object
         """
@@ -86,44 +88,44 @@ class BaseService:
         if val.find(',') > 0:
             arr = val.split(',')
             # print(arr)
-            expression = Model.__dict__[field].between(arr[0], arr[1])
+            expression = model.__dict__[field].between(arr[0], arr[1])
 
         elif val.find('_') > 0:
             arr = val.split('_')
             operator = arr[1]
             value = arr[0]
-            if operator == "gt" and field in Model.__dict__:
-                expression = Model.__dict__[field] > value
+            if operator == "gt" and field in model.__dict__:
+                expression = model.__dict__[field] > value
 
-            elif operator == "gteq" and field in Model.__dict__:
-                expression = Model.__dict__[field] >= value
+            elif operator == "gteq" and field in model.__dict__:
+                expression = model.__dict__[field] >= value
 
-            elif operator == "lt" and field in Model.__dict__:
-                expression = Model.__dict__[field] < value
+            elif operator == "lt" and field in model.__dict__:
+                expression = model.__dict__[field] < value
 
-            elif operator == "lteq" and field in Model.__dict__:
-                expression = Model.__dict__[field] <= value
+            elif operator == "lteq" and field in model.__dict__:
+                expression = model.__dict__[field] <= value
 
         else:
-            expression = Model.__dict__[field] == val
+            expression = model.__dict__[field] == val
 
         return expression
 
-    def getByUUID(self, uuid):
+    def get_by_uuid(self, uuid):
         """ get by uuid """
-        Model = self.Meta.model
+        model = self.Meta.model
 
-        results = Model.query.get(uuid)
+        results = model.query.get(uuid)
         return results
 
-    def getByValues(self, values):
+    def get_by_values(self, values):
         """ get by values """
-        Model = self.Meta.model
+        model = self.Meta.model
 
-        results = Model.query
-        results = self.filterByResults(results, values)
-        results = self.orderByResults(results)
-        results = self.offsetLimit(results, values)
+        results = model.query
+        results = self.filter_by_results(results, values)
+        results = self.order_by_results(results)
+        results = self.offset_limit(results, values)
 
         results = results.all()
 
@@ -132,11 +134,11 @@ class BaseService:
     def fetch(self, uuid=None, values=None):
         """ Get """
         if uuid:
-            result = self.getByUUID(uuid)
+            result = self.get_by_uuid(uuid)
             result = self.Meta.model_schema.dump(result).data
             return result
 
-        results = self.getByValues(values)
+        results = self.get_by_values(values)
         results = self.Meta.models_schema.dump(results)
         return results
 
@@ -152,10 +154,10 @@ class BaseService:
 
     def update(self, uuid=None, json_data=None):
         """ update """
-        Model = self.Meta.model
+        model = self.Meta.model
         schema = self.Meta.model_schema
 
-        model_query = Model.query.get(uuid)
+        model_query = model.query.get(uuid)
         if model_query is None:
             return {'message': 'Content not found'}, 404
 
