@@ -6,6 +6,14 @@ class BareboneBaseService:
     """ BareboneBaseService Base Service """
     __abstract__ = True
 
+    class Meta:
+        """ Meta base service """
+        model = None
+        model_schema = None
+        models_schema = None
+        sortable = []
+        filterable = []
+
     def fetch(self, uuid=None, values=None):
         """ Get """
 
@@ -23,15 +31,6 @@ class BaseService(BareboneBaseService):
         3. __filterable__ = type array
         4. __model__ = type Model
     """
-    __abstract__ = True
-
-    class Meta:
-        """ Meta base service """
-        model = None
-        model_schema = None
-        models_schema = None
-        sortable = []
-        filterable = []
 
     def __init__(self, **kwargs):
         """ initiate base service """
@@ -43,7 +42,8 @@ class BaseService(BareboneBaseService):
         self.sortable = self.Meta.sortable
         self.filterable = self.Meta.filterable
 
-    def offset_limit(self, results, values):
+    @staticmethod
+    def offset_limit(results, values):
         """ results offset limit
             limit and offset parameters needed for results to use limit, offset """
 
@@ -138,14 +138,15 @@ class BaseService(BareboneBaseService):
         results = self.model.query.get(uuid)
         return results
 
-    def get_by_values(self, values):
+    def get_by_values(self, values=None):
         """ get by values """
         # model = self.Meta.model
 
         results = self.model.query
-        results = self.filter_by_results(results, values)
-        results = self.order_by_results(results)
-        results = self.offset_limit(results, values)
+        if values is not None:
+            results = self.filter_by_results(results, values)
+            results = self.order_by_results(results)
+            results = self.offset_limit(results, values)
 
         results = results.all()
 
@@ -162,17 +163,17 @@ class BaseService(BareboneBaseService):
         results = self.Meta.models_schema.dump(results)
         return results
 
-    def create(self, json_data):
+    def create(self, data):
         """ Post """
         # schema = self.Meta.model_schema
-        instance, errors = self.schema.load(json_data)
+        instance, errors = self.schema.load(data)
         if errors:
             return errors, 422
         instance.save()
         result = self.schema.dump(instance).data
         return result
 
-    def update(self, uuid=None, json_data=None):
+    def update(self, data=None, uuid=None):
         """ update """
         # model = self.Meta.model
         # schema = self.Meta.model_schema
@@ -181,7 +182,7 @@ class BaseService(BareboneBaseService):
         if model_query is None:
             return {'message': 'Content not found'}, 404
 
-        model_instance, errors = self.schema.load(json_data, instance=model_query, partial=True)
+        model_instance, errors = self.schema.load(data, instance=model_query, partial=True)
         if errors:
             return errors, 422
 

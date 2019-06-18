@@ -5,7 +5,7 @@ from flask_restplus import Namespace, Resource
 
 from app.api.base import DefaultResource, ProtectedResource
 from app.models.users import Users
-from app.service.users import UsersServices
+from app.service.users import UsersServices, UserTestService
 from app.utils.decorator import token_required
 
 user_api = Namespace('user')
@@ -134,4 +134,4 @@ class TestBaseDetailsAPI(ProtectedResource):
     """Test Base details functionality"""
     class Meta:
         """meta class"""
-        service = UsersServices()
+        service = UserTestService()

@@ -18,6 +18,7 @@ from app.models.verification_codes import VerificationCodes
 
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
+from app.service.base_service import BaseService
 
 from app.utils.utils import send_email, decode_auth_token, encode_auth_token, response_generator
 
@@ -282,3 +283,13 @@ class UsersServices:
             return self.get_user_details(uuid)
 
         return self.get_all()
+
+
+class UserTestService(BaseService):
+    """ Role service """
+
+    class Meta:
+        """ Meta data"""
+        model = Users
+        model_schema = user_schema
+        models_schema = users_schema
