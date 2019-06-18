@@ -2,7 +2,24 @@
 from sqlalchemy import desc
 
 
-class BaseService:
+class BareboneBaseService:
+    """ BareboneBaseService Base Service """
+    __abstract__ = True
+
+    def fetch(self, uuid=None, values=None):
+        """ Get """
+        pass
+
+    def create(self, json_data):
+        """ Post """
+        pass
+
+    def update(self, uuid=None, json_data=None):
+        """ update """
+        pass
+
+
+class BaseService(BareboneBaseService):
     """ class base service
         1. __searchable__ = type array
         2. __sortable__ = type array
@@ -21,8 +38,13 @@ class BaseService:
 
     def __init__(self, **kwargs):
         """ initiate base service """
+        self.model = self.Meta.model
+        self.schema = self.Meta.model_schema
+
         self.Meta.sortable = kwargs.get('sortable')
         self.Meta.filterable = kwargs.get('filterable')
+        self.sortable = self.Meta.sortable
+        self.filterable = self.Meta.filterable
 
     def offset_limit(self, results, values):
         """ results offset limit
@@ -45,28 +67,28 @@ class BaseService:
     def order_by_results(self, results):
         """ order by results """
 
-        model = self.Meta.model
-        sortable = self.Meta.sortable
+        # model = self.Meta.model
+        # sortable = self.Meta.sortable
 
-        for field in sortable:
+        for field in self.sortable:
             if field.find('!') == 0:
                 field = field.lstrip('!')
-                if field in model.__dict__:
-                    results = results.order_by(desc(model.__dict__[field]))
+                if field in self.model.__dict__:
+                    results = results.order_by(desc(self.model.__dict__[field]))
             else:
-                if field in model.__dict__:
-                    results = results.order_by(model.__dict__[field])
+                if field in self.model.__dict__:
+                    results = results.order_by(self.model.__dict__[field])
 
         return results
 
     def filter_by_results(self, results, values):
         """ fitler by results """
-        model = self.Meta.model
-        filterable = self.Meta.filterable
+        # model = self.Meta.model
+        # filterable = self.Meta.filterable
 
         for key, val in values.items():
-            if (val is not None and val != 0) and self.__filterable_field_checking(filterable, key):
-                results = results.filter(self.__expression_return(model, key, val))
+            if (val is not None and val != 0) and self.__filterable_field_checking(self.filterable, key):
+                results = results.filter(self.__expression_return(self.model, key, val))
 
         return results
 
@@ -113,16 +135,16 @@ class BaseService:
 
     def get_by_uuid(self, uuid):
         """ get by uuid """
-        model = self.Meta.model
+        # model = self.Meta.model
 
-        results = model.query.get(uuid)
+        results = self.model.query.get(uuid)
         return results
 
     def get_by_values(self, values):
         """ get by values """
-        model = self.Meta.model
+        # model = self.Meta.model
 
-        results = model.query
+        results = self.model.query
         results = self.filter_by_results(results, values)
         results = self.order_by_results(results)
         results = self.offset_limit(results, values)
@@ -144,28 +166,28 @@ class BaseService:
 
     def create(self, json_data):
         """ Post """
-        schema = self.Meta.model_schema
-        instance, errors = schema.load(json_data)
+        # schema = self.Meta.model_schema
+        instance, errors = self.schema.load(json_data)
         if errors:
             return errors, 422
         instance.save()
-        result = schema.dump(instance).data
+        result = self.schema.dump(instance).data
         return result
 
     def update(self, uuid=None, json_data=None):
         """ update """
-        model = self.Meta.model
-        schema = self.Meta.model_schema
+        # model = self.Meta.model
+        # schema = self.Meta.model_schema
 
-        model_query = model.query.get(uuid)
+        model_query = self.model.query.get(uuid)
         if model_query is None:
             return {'message': 'Content not found'}, 404
 
-        model_instance, errors = schema.load(json_data, instance=model_query, partial=True)
+        model_instance, errors = self.schema.load(json_data, instance=model_query, partial=True)
         if errors:
             return errors, 422
 
         model_instance.save()
-        result = schema.dump(model_instance).data
+        result = self.schema.dump(model_instance).data
 
         return result
