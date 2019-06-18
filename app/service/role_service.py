@@ -13,9 +13,3 @@ class RoleService(BaseService):
         model = Role
         model_schema = role_schema
         models_schema = roles_schema
-        # searchable = ['name']
-        # sortable = ['id', '!created_at', 'updated_at']
-        # filterable = ['active', 'created_at', 'updated_at']
-    def __init__(self, **kwargs):
-        """ """
-        super(RoleService, self).__init__(**kwargs)
