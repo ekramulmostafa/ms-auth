@@ -8,15 +8,12 @@ class BareboneBaseService:
 
     def fetch(self, uuid=None, values=None):
         """ Get """
-        pass
 
     def create(self, json_data):
         """ Post """
-        pass
 
     def update(self, uuid=None, json_data=None):
         """ update """
-        pass
 
 
 class BaseService(BareboneBaseService):
@@ -87,7 +84,8 @@ class BaseService(BareboneBaseService):
         # filterable = self.Meta.filterable
 
         for key, val in values.items():
-            if (val is not None and val != 0) and self.__filterable_field_checking(self.filterable, key):
+            if (val is not None and val != 0) \
+                    and self.__filterable_field_checking(self.filterable, key):
                 results = results.filter(self.__expression_return(self.model, key, val))
 
         return results
