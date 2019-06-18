@@ -28,8 +28,23 @@ def decode_auth_token(auth_token):
     """Decodes the auth token"""
     try:
         payload = jwt.decode(auth_token, app.config.get('JWT_SECRET_KEY'))
-        return {'status': 'success', 'data': payload, 'message': ''}
+        return response_generator(status='success', data=payload, message='')
     except jwt.ExpiredSignatureError:
-        return {'status': 'error', 'data': {}, 'message': 'token expired'}
+        return response_generator(status='error', data={}, message='token expired')
     except jwt.InvalidTokenError:
-        return {'status': 'error', 'data': {}, 'message': 'invalid token'}
+        return response_generator(status='error', data={}, message='invalid token')
+
+
+def response_generator(status=None, data=None, message=None):
+    """common response generator"""
+    if all(v is None for v in [status, data, message]):
+        status = 'error'
+        data = {}
+        message = 'Internal Server Error'
+
+    response = {
+        'status': status or 'error',
+        'data': data or {},
+        'message': message
+    }
+    return response

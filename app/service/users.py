@@ -19,12 +19,10 @@ from app.models.verification_codes import VerificationCodes
 from app.serializers.users import UsersModelSchema, UsersFilterSerializer, UsersLoginSerializer
 from app.logging import Logger
 
-from app.utils.utils import send_email, decode_auth_token, encode_auth_token
-
+from app.utils.utils import send_email, decode_auth_token, encode_auth_token, response_generator
 
 user_schema = UsersModelSchema()
 users_schema = UsersModelSchema(many=True)
-
 
 logger = Logger(__name__)
 
@@ -269,3 +267,18 @@ class UsersServices:
         return {'status': 'success',
                 'data': {},
                 'message': 'password updated successfully'}, 200
+
+    def get_all(self):
+        """User get all"""
+        logger.info("User list get")
+        all_users = Users.query.all()
+        result = users_schema.dump(all_users)
+        return response_generator(status='success', data=result, message=''), 200
+
+    def fetch(self, uuid=None):
+        """User details method"""
+
+        if uuid:
+            return self.get_user_details(uuid)
+
+        return self.get_all()

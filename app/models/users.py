@@ -7,7 +7,7 @@ from sqlalchemy_utils import ChoiceType
 
 from sqlalchemy.dialects.postgresql import UUID
 
-from app.models.model_mixin import TimestampMixin
+from app.models.base_model import BaseModel
 
 from app.models.user_role import UserRole
 from app.models.role import Role
@@ -16,7 +16,7 @@ from app.models.role import Role
 from . import db
 
 
-class Users(TimestampMixin, db.Model):
+class Users(BaseModel):
     """User model"""
 
     STATUS = [
@@ -43,10 +43,10 @@ class Users(TimestampMixin, db.Model):
 
     roles = db.relationship(Role, secondary=UserRole.__tablename__, backref=db.backref('users'))
 
-    updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
-    created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
-    updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
-    created_by_user = db.relationship("Users", foreign_keys=[created_by])
+    # updated_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    # created_by = db.Column(UUID(as_uuid=True), db.ForeignKey("users.id"))
+    # updated_by_user = db.relationship("Users", foreign_keys=[updated_by])
+    # created_by_user = db.relationship("Users", foreign_keys=[created_by])
 
     def save(self, commit=True):
         """ user save method"""

@@ -3,6 +3,7 @@
 from flask import request, session
 from flask_restplus import Namespace, Resource
 
+from app.api.base import DefaultResource, ProtectedResource
 from app.models.users import Users
 from app.service.users import UsersServices
 from app.utils.decorator import token_required
@@ -96,16 +97,16 @@ class CurrentUserAPI(Resource):
     @token_required
     def get(self):
         """GET for current user"""
-        user = session.pop('current_user', None)
-        return user_service.get_user_details(uuid=str(user.id))
+        user = session['current_user']
+        return user_service.get_user_details(uuid=user['id'])
 
     @token_required
     def put(self):
         """PUT for Current User API Update"""
         data = request.json
-        user = session.pop('current_user', None)
-        data['data']['updated_by'] = user.id
-        return user_service.update(data['data'], uuid=str(user.id))
+        user = session['current_user']
+        data['data']['updated_by'] = user['id']
+        return user_service.update(data['data'], uuid=user['id'])
 
 
 @user_api.route('/current-user/update-password/')
@@ -115,5 +116,22 @@ class CurrentUserUpdatePasswordAPI(Resource):
     def put(self):
         """PUT for Current User API Update"""
         data = request.json
-        user = session.pop('current_user', None)
+        user = Users.query.get(session['current_user']['id'])
         return user_service.update_password(data['data'], user=user)
+
+
+@user_api.route('/log/')
+class TestBaseAPI(DefaultResource):
+    """Test Base functionality"""
+    class Meta:
+        """meta class"""
+        service = UsersServices()
+        methods = ['GET', 'POST']
+
+
+@user_api.route('/log/<uuid:uuid>/')
+class TestBaseDetailsAPI(ProtectedResource):
+    """Test Base details functionality"""
+    class Meta:
+        """meta class"""
+        service = UsersServices()
