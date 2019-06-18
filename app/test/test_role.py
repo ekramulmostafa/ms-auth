@@ -220,15 +220,15 @@ class RoleTests(BaseTest):
                 content_type='application/json'
             )
         # Search
-        extra_url = url + '?q=test_role2'
-        response = self.client.get(
-            extra_url,
-            content_type='application/json'
-        )
-        self.assert200(response)
-        json_response = json.loads(response.get_data(as_text=True))
-        # print(json_response)
-        self.assertEqual(json_response[0]['name'], 'test_role2')
+        # extra_url = url + '?q=test_role2'
+        # response = self.client.get(
+        #     extra_url,
+        #     content_type='application/json'
+        # )
+        # self.assert200(response)
+        # json_response = json.loads(response.get_data(as_text=True))
+        # # print(json_response)
+        # self.assertEqual(json_response[0]['name'], 'test_role2')
 
         # Search Boolean
         extra_url = url + '?active=true'
