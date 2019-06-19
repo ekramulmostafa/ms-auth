@@ -3,8 +3,9 @@
 from flask import request, session
 from flask_restplus import Namespace, Resource
 
-from app.api.base import DefaultResource, ProtectedResource
+from app.api.base import DefaultResource, ProtectedResource, ApiView
 from app.models.users import Users
+from app.serializers.users import UsersModelSchema
 from app.service.users import UsersServices, UserTestService
 from app.utils.decorator import token_required
 
@@ -121,12 +122,14 @@ class CurrentUserUpdatePasswordAPI(Resource):
 
 
 @user_api.route('/log/')
-class TestBaseAPI(DefaultResource):
+class TestBaseAPI(ApiView):
     """Test Base functionality"""
     class Meta:
         """meta class"""
         service = UsersServices()
-        methods = ['GET', 'POST']
+        allowed_methods = ['GET', 'POST']
+        schema = UsersModelSchema()
+        schemas = UsersModelSchema(many=True)
 
 
 @user_api.route('/log/<uuid:uuid>/')

@@ -101,17 +101,23 @@ class UsersServices:
             logger.warning("User no result found", data=str(ex))
             return {'status': 'error', 'data': {}, 'message': str(ex)}, 400
 
-    def create(self, data: dict):
+    # def create(self, data: dict):
+    #     """User create method"""
+    #     if not data:
+    #         raise Exception('No input data provided')
+    #     result_data, errors = user_schema.load(data)
+    #     if errors:
+    #         return {'status': 'error', 'data': {}, 'message': errors}, 422
+    #     result_data.save()
+    #     response_data = user_schema.dump(result_data).data
+    #     VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
+    #     return {'status': 'success', 'data': response_data, 'message': ''}, 201
+
+    def create(self, instance=None):
         """User create method"""
-        if not data:
-            raise Exception('No input data provided')
-        result_data, errors = user_schema.load(data)
-        if errors:
-            return {'status': 'error', 'data': {}, 'message': errors}, 422
-        result_data.save()
-        response_data = user_schema.dump(result_data).data
-        VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
-        return {'status': 'success', 'data': response_data, 'message': ''}, 201
+        instance.save()
+        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
+        return instance
 
     def update(self, data: dict, uuid):
         """specific User update"""
@@ -269,12 +275,21 @@ class UsersServices:
                 'data': {},
                 'message': 'password updated successfully'}, 200
 
-    def get_all(self):
-        """User get all"""
-        logger.info("User list get")
-        all_users = Users.query.all()
-        result = users_schema.dump(all_users)
-        return response_generator(status='success', data=result, message=''), 200
+    # def get_all(self):
+    #     """User get all"""
+    #     logger.info("User list get")
+    #     all_users = Users.query.all()
+    #     result = users_schema.dump(all_users)
+    #     return response_generator(status='success', data=result, message=''), 200
+    @staticmethod
+    def get_details(uuid):
+        user = Users.query.get(uuid)
+        return user
+
+    @staticmethod
+    def get_all():
+        users = Users.query.all()
+        return users
 
     def fetch(self, uuid=None):
         """User details method"""
