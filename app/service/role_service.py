@@ -1,9 +1,6 @@
 """ Role service """
 from app.service.base_service import BaseService
-from app.models.role import Role, RoleSchema
-
-role_schema = RoleSchema()
-roles_schema = RoleSchema(many=True)
+from app.models.role import Role
 
 
 class RoleService(BaseService):
@@ -11,5 +8,3 @@ class RoleService(BaseService):
     class Meta:
         """ Meta data"""
         model = Role
-        model_schema = role_schema
-        models_schema = roles_schema

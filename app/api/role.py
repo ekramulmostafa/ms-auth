@@ -155,7 +155,7 @@ class RoleList(ApiView):
         sortable = ['id', '!created_at', 'updated_at']
         filterable = ['active', 'created_at', 'updated_at']
 
-        service = RoleService(sortable, filterable)
+        service = RoleService()
         allowed_methods = ['GET', 'POST']
         schema = RoleSchema()
         schemas = RoleSchema(many=True)

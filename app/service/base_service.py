@@ -32,15 +32,15 @@ class BaseService(BareboneBaseService):
         4. __model__ = type Model
     """
 
-    def __init__(self, sortable=[], filterable=[]):
+    # def __init__(self, sortable=[], filterable=[]):
+    def __init__(self):
         """ initiate base service """
         self.model = self.Meta.model
-        # self.schema = self.Meta.model_schema
 
-        self.Meta.sortable = sortable
-        self.Meta.filterable = filterable
-        self.sortable = self.Meta.sortable
-        self.filterable = self.Meta.filterable
+    def __call__(self, sortable=[], filterable=[]):
+        """ call function """
+        self.sortable = sortable
+        self.filterable = filterable
 
     @staticmethod
     def offset_limit(results, values):
@@ -64,9 +64,6 @@ class BaseService(BareboneBaseService):
     def order_by_results(self, results):
         """ order by results """
 
-        # model = self.Meta.model
-        # sortable = self.Meta.sortable
-
         for field in self.sortable:
             if field.find('!') == 0:
                 field = field.lstrip('!')
@@ -80,8 +77,6 @@ class BaseService(BareboneBaseService):
 
     def filter_by_results(self, results, values):
         """ fitler by results """
-        # model = self.Meta.model
-        # filterable = self.Meta.filterable
 
         for key, val in values.items():
             if (val is not None and val != 0) \
@@ -107,7 +102,7 @@ class BaseService(BareboneBaseService):
         expression = None
         if val.find(',') > 0:
             arr = val.split(',')
-            # print(arr)
+
             expression = model.__dict__[field].between(arr[0], arr[1])
 
         elif val.find('_') > 0:
@@ -133,15 +128,11 @@ class BaseService(BareboneBaseService):
 
     def get_by_uuid(self, uuid):
         """ get by uuid """
-        # model = self.Meta.model
-
         results = self.model.query.get(uuid)
         return results
 
     def get_by_values(self, values=None):
         """ get by values """
-        # model = self.Meta.model
-
         results = self.model.query
         if values is not None:
             results = self.filter_by_results(results, values)
@@ -156,42 +147,13 @@ class BaseService(BareboneBaseService):
         """ Get """
         if uuid:
             result = self.get_by_uuid(uuid)
-            # result = self.Meta.model_schema.dump(result).data
             return result
 
         results = self.get_by_values(values)
-        # results = self.Meta.models_schema.dump(results)
         return results
 
     @staticmethod
     def save_instance(instance):
         """ save instance """
         instance.save()
-
-    # def create(self, data):
-    #     """ Post """
-    #     # schema = self.Meta.model_schema
-    #     instance, errors = self.schema.load(data)
-    #     if errors:
-    #         return errors, 422
-    #     instance.save()
-    #     result = self.schema.dump(instance).data
-    #     return result
-
-    # def update(self, data=None, uuid=None):
-    #     """ update """
-    #     # model = self.Meta.model
-    #     # schema = self.Meta.model_schema
-    #
-    #     model_query = self.model.query.get(uuid)
-    #     if model_query is None:
-    #         return {'message': 'Content not found'}, 404
-    #
-    #     model_instance, errors = self.schema.load(data, instance=model_query, partial=True)
-    #     if errors:
-    #         return errors, 422
-    #
-    #     model_instance.save()
-    #     result = self.schema.dump(model_instance).data
-    #
-    #     return result
+        return instance
