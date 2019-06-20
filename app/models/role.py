@@ -4,7 +4,7 @@ from datetime import datetime as dateconverterdatetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import desc, or_, and_
-from marshmallow import fields
+from marshmallow import fields, validates, ValidationError
 from app.models.permission import PermissionSchema
 from app.models.role_permission import RolePermission
 from app.models.base_model import BaseModel
@@ -101,3 +101,11 @@ class RoleSchema(ma.ModelSchema):
         """Role model meta"""
         model = Role
         fields = ('id', 'active', 'name', 'created_by', 'updated_by', 'created_at', 'updated_at')
+
+    @validates('name')
+    def validates_name(self, name):
+        """ role name validates """
+        name = Role.query.filter(Role.name == name).count()
+
+        if name > 0:
+            raise ValidationError('Role name already exists !!!')
