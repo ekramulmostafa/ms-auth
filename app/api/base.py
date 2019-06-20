@@ -130,17 +130,19 @@ class FetchApiView(Resource):
         schema = getattr(self.Meta, 'schema', None)
         schemas = getattr(self.Meta, 'schemas', None)
         service = self.Meta.service
+        request_params = request.args
         if meth and not meth.__contains__(request.method):
             abort(405)
 
         if uuid:
-            data = service.get_details(uuid)
+            data = service.fetch(uuid)
             if not data:
                 return {'status': 'error', 'data': {}, 'message': 'No data found'}, 400
             response_data = schema.dump(data)
             return {'status': 'success', 'data': response_data.data, 'message': ''}, 200
 
-        data = service.get_all()
+        data = service.fetch(None, request_params)
+
         if not data:
             return {'status': 'error', 'data': {}, 'message': 'No data found'}, 400
         response_data = schemas.dump(data)

@@ -2,11 +2,12 @@
 from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 
-from app.api.base import DefaultResource, ProtectedResource
+from app.api.base import DefaultResource, ProtectedResource, ApiView
 from app.logging import Logger
 from app.models.role import RoleSchema
 from app.utils.get_current_user import get_current_user
 from app.service.role_service import RoleService
+
 
 api = Namespace('role')
 role_schema = RoleSchema()
@@ -145,17 +146,20 @@ logger = Logger(__name__)
 
 
 @api.route('/')
-class RoleList(DefaultResource):
+class RoleList(ApiView):
     """Test Base functionality"""
 
     class Meta:
         """meta class"""
+
         param = {
             'sortable': ['id', '!created_at', 'updated_at'],
             'filterable': ['active', 'created_at', 'updated_at']
         }
         service = RoleService(**param)
-        methods = ['GET', 'POST']
+        allowed_methods = ['GET', 'POST']
+        schema = RoleSchema()
+        schemas = RoleSchema(many=True)
 
 
 @api.route('/<uuid:uuid>/')
