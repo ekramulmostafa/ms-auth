@@ -157,3 +157,11 @@ class BaseService(BareboneBaseService):
         """ save instance """
         instance.save()
         return instance
+
+    def perform_create(self, instance):
+        """ perform create """
+        return self.save_instance(instance)
+
+    def perform_update(self, instance):
+        """ perform update """
+        return self.save_instance(instance)
