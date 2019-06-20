@@ -152,11 +152,10 @@ class RoleList(ApiView):
     class Meta:
         """meta class"""
 
-        param = {
-            'sortable': ['id', '!created_at', 'updated_at'],
-            'filterable': ['active', 'created_at', 'updated_at']
-        }
-        service = RoleService(**param)
+        sortable = ['id', '!created_at', 'updated_at']
+        filterable = ['active', 'created_at', 'updated_at']
+
+        service = RoleService(sortable, filterable)
         allowed_methods = ['GET', 'POST']
         schema = RoleSchema()
         schemas = RoleSchema(many=True)

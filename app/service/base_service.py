@@ -32,13 +32,13 @@ class BaseService(BareboneBaseService):
         4. __model__ = type Model
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, sortable=[], filterable=[]):
         """ initiate base service """
         self.model = self.Meta.model
         # self.schema = self.Meta.model_schema
 
-        self.Meta.sortable = kwargs.get('sortable')
-        self.Meta.filterable = kwargs.get('filterable')
+        self.Meta.sortable = sortable
+        self.Meta.filterable = filterable
         self.sortable = self.Meta.sortable
         self.filterable = self.Meta.filterable
 
