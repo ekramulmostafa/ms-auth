@@ -113,12 +113,6 @@ class UsersServices:
     #     VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
     #     return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
-    def create(self, instance=None):
-        """User create method"""
-        instance.save()
-        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
-        return instance
-
     def update(self, data: dict, uuid):
         """specific User update"""
         logger.info("User update", data={'uuid': str(uuid)})
@@ -290,6 +284,18 @@ class UsersServices:
     def get_all():
         users = Users.query.all()
         return users
+
+    @staticmethod
+    def create(instance=None):
+        """User create method"""
+        instance.save()
+        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
+        return instance
+
+    @staticmethod
+    def perform_update(instance=None):
+        instance.save()
+        return instance
 
     def fetch(self, uuid=None):
         """User details method"""
