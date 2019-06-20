@@ -126,15 +126,18 @@ class TestBaseAPI(ApiView):
     """Test Base functionality"""
     class Meta:
         """meta class"""
-        service = UsersServices()
+        service = UserTestService()
         allowed_methods = ['GET', 'POST']
         schema = UsersModelSchema()
         schemas = UsersModelSchema(many=True)
 
 
 @user_api.route('/log/<uuid:uuid>/')
-class TestBaseDetailsAPI(ProtectedResource):
+class TestBaseDetailsAPI(ApiView):
     """Test Base details functionality"""
     class Meta:
         """meta class"""
         service = UserTestService()
+        allowed_methods = ['GET', 'PUT']
+        schema = UsersModelSchema()
+        schemas = UsersModelSchema(many=True)

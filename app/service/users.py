@@ -269,33 +269,12 @@ class UsersServices:
                 'data': {},
                 'message': 'password updated successfully'}, 200
 
-    # def get_all(self):
-    #     """User get all"""
-    #     logger.info("User list get")
-    #     all_users = Users.query.all()
-    #     result = users_schema.dump(all_users)
-    #     return response_generator(status='success', data=result, message=''), 200
-    @staticmethod
-    def get_details(uuid):
-        user = Users.query.get(uuid)
-        return user
-
-    @staticmethod
-    def get_all():
-        users = Users.query.all()
-        return users
-
-    @staticmethod
-    def create(instance=None):
-        """User create method"""
-        instance.save()
-        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
-        return instance
-
-    @staticmethod
-    def perform_update(instance=None):
-        instance.save()
-        return instance
+    def get_all(self):
+        """User get all"""
+        logger.info("User list get")
+        all_users = Users.query.all()
+        result = users_schema.dump(all_users)
+        return response_generator(status='success', data=result, message=''), 200
 
     def fetch(self, uuid=None):
         """User details method"""
@@ -312,5 +291,18 @@ class UserTestService(BaseService):
     class Meta:
         """ Meta data"""
         model = Users
-        model_schema = user_schema
-        models_schema = users_schema
+
+    @staticmethod
+    def get_details(uuid):
+        user = Users.query.get(uuid)
+        return user
+
+    @staticmethod
+    def get_all():
+        users = Users.query.all()
+        return users
+
+    def perform_create(self, instance=None):
+        instance = self.save_instance(instance)
+        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
+        return instance

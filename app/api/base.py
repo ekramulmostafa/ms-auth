@@ -116,7 +116,7 @@ class CreateApiView(Resource):
         if errors:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
 
-        result_data = service.save_instance(result_data)
+        result_data = service.perform_create(result_data)
         response_data = schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
@@ -131,7 +131,9 @@ class FetchApiView(Resource):
         schemas = getattr(self.Meta, 'schemas', None)
         service = self.Meta.service
 
-        params = {"sortable":self.Meta.sortable, "filterable": self.Meta.filterable}
+        sortable = getattr(self.Meta, 'sortable', [])
+        filterable = getattr(self.Meta, 'filterable', [])
+        params = {"sortable": sortable, "filterable": filterable}
         service(**params)
 
         request_params = request.args
@@ -182,7 +184,7 @@ class UpdateApiView(Resource):
         result_data, errors = schema.load(data, instance=obj, partial=True)
         if errors:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
-        result_data = service.save_instance(result_data)
+        result_data = service.perform_update(result_data)
         response_data = schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
 
