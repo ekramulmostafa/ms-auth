@@ -181,7 +181,7 @@ class UpdateApiView(Resource):
         obj = service.get_details(uuid)
         if not obj:
             return {'status': 'error', 'data': {}, 'message': 'No data found'}, 400
-        result_data, errors = schema.load(data, instance=obj, partial=True)
+        result_data, errors = schema.load(data['data'], instance=obj, partial=True)
         if errors:
             return {'status': 'error', 'data': {}, 'message': errors}, 422
         result_data = service.perform_update(result_data)
