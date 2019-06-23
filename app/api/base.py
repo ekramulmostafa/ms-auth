@@ -6,7 +6,7 @@ from flask import request, session
 from app.utils.decorator import token_required
 
 
-class CreateApiView(Resource):
+class CreateApiResource(Resource):
     """
     create api view
     """
@@ -29,7 +29,7 @@ class CreateApiView(Resource):
         return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
 
-class FetchApiView(Resource):
+class FetchApiResource(Resource):
     """
     fetch api view
     """
@@ -63,7 +63,7 @@ class FetchApiView(Resource):
         return {'status': 'success', 'data': response_data.data, 'message': ''}, 200
 
 
-class UpdateApiView(Resource):
+class UpdateApiResource(Resource):
     """
     Update api view
     """
@@ -98,7 +98,7 @@ class UpdateApiView(Resource):
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
 
 
-class ProtectedCreateApiView(CreateApiView):
+class AuthorizedCreateApiResource(CreateApiResource):
     """
     protected create api view
     """
@@ -114,7 +114,7 @@ class ProtectedCreateApiView(CreateApiView):
         return super().post(*args, **kwargs)
 
 
-class ProtectedFetchApiView(FetchApiView):
+class AuthorizedFetchApiResource(FetchApiResource):
     """
     protected Update api view
     """
@@ -130,7 +130,7 @@ class ProtectedFetchApiView(FetchApiView):
         return super().get(uuid, *args, **kwargs)
 
 
-class ProtectedUpdateApiView(UpdateApiView):
+class AuthorizedUpdateApiResource(UpdateApiResource):
     """
     protected Update api view
     """
@@ -146,19 +146,19 @@ class ProtectedUpdateApiView(UpdateApiView):
         return super().put(uuid, *args, **kwargs)
 
 
-class ApiView(CreateApiView,
-              FetchApiView,
-              UpdateApiView):
+class ApiResource(CreateApiResource,
+                  FetchApiResource,
+                  UpdateApiResource):
     """
     api view
     """
     pass
 
 
-class ProtectedApiView(ProtectedCreateApiView,
-                       ProtectedFetchApiView,
-                       ProtectedUpdateApiView):
+class AuthorizedApiResource(AuthorizedCreateApiResource,
+                            AuthorizedFetchApiResource,
+                            AuthorizedUpdateApiResource):
     """
-    protected api view
+    Authorized api view
     """
     pass
