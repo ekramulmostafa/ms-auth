@@ -3,7 +3,7 @@
 from flask import request, session
 from flask_restplus import Namespace, Resource
 
-from app.api.base import DefaultResource, ProtectedResource, ApiView
+from app.api.base import DefaultResource, ProtectedResource, ApiView, ProtectedApiView
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema
 from app.service.users import UsersServices, UserTestService
@@ -133,7 +133,7 @@ class TestBaseAPI(ApiView):
 
 
 @user_api.route('/log/<uuid:uuid>/')
-class TestBaseDetailsAPI(ApiView):
+class TestBaseDetailsAPI(ProtectedApiView):
     """Test Base details functionality"""
     class Meta:
         """meta class"""

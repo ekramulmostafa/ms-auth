@@ -159,9 +159,7 @@ class UpdateApiView(Resource):
     """
     Update api view
     """
-
-    @token_required
-    def put(self, uuid=None):
+    def put(self, uuid=None, *args, **kwargs):
         """
         update api
         :param uuid:
@@ -175,8 +173,11 @@ class UpdateApiView(Resource):
             abort(405)
 
         data = request.json
-        user = session['current_user']
-        data['data']['updated_by'] = user['id']
+
+        is_token_required = kwargs.pop('token', False)
+        if is_token_required:
+            user = session['current_user']
+            data['data']['updated_by'] = user['id']
 
         obj = service.get_details(uuid)
         if not obj:
@@ -189,10 +190,35 @@ class UpdateApiView(Resource):
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
 
 
+class ProtectedUpdateApiView(UpdateApiView):
+    """
+    protected Update api view
+    """
+
+    @token_required
+    def put(self, uuid=None, *args, **kwargs):
+        """
+        update api
+        :param uuid:
+        :return:
+        """
+        kwargs['token'] = True
+        return super().put(uuid, *args, **kwargs)
+
+
 class ApiView(CreateApiView,
               FetchApiView,
               UpdateApiView):
     """
     api view
+    """
+    pass
+
+
+class ProtectedApiView(CreateApiView,
+                       FetchApiView,
+                       ProtectedUpdateApiView):
+    """
+    protected api view
     """
     pass
