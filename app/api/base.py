@@ -6,103 +6,11 @@ from flask import request, session
 from app.utils.decorator import token_required
 
 
-class BaseResource(Resource):
-    """Resource base class"""
-    __abstract__ = True
-
-    class Meta:
-        """Meta class"""
-        service = None
-        allowed_methods = None
-
-    def get(self, uuid=None):
-        """base get"""
-
-    def post(self):
-        """base post"""
-
-    def put(self, uuid=None):
-        """base put"""
-
-
-class DefaultResource(BaseResource):
-    """Resource for generic """
-
-    def post(self):
-        """post for generic"""
-        meth = getattr(self.Meta, 'allowed_methods', None)
-        if meth and not meth.__contains__(request.method):
-            abort(405)
-
-        data = request.get_json(force=True)
-        return self.Meta.service.create(data['data'])
-
-    def get(self, uuid=None):
-        """ get for details """
-        meth = getattr(self.Meta, 'allowed_methods', None)
-        if meth and not meth.__contains__(request.method):
-            abort(405)
-
-        if uuid:
-            return self.Meta.service.fetch(uuid)
-        return self.Meta.service.fetch()
-
-    def put(self, uuid=None):
-        """put for update"""
-        meth = getattr(self.Meta, 'allowed_methods', None)
-        if meth and not meth.__contains__(request.method):
-            abort(405)
-
-        data = request.json
-        return self.Meta.service.update(data['data'], uuid)
-
-
-class ProtectedResource(BaseResource):
-    """Resource where token is required """
-
-    @token_required
-    def post(self):
-        """post where token is required"""
-        meth = getattr(self.Meta, 'allowed_methods', None)
-        if meth and not meth.__contains__(request.method):
-            abort(405)
-
-        data = request.get_json(force=True)
-        user = session['current_user']
-        data['data']['created_by'] = user['id']
-        data['data']['updated_by'] = user['id']
-        return self.Meta.service.create(data['data'])
-
-    @token_required
-    def get(self, uuid=None):
-        """ get where token is required"""
-
-        meth = getattr(self.Meta, 'allowed_methods', None)
-        if meth and not meth.__contains__(request.method):
-            abort(405)
-
-        if uuid:
-            return self.Meta.service.fetch(uuid)
-        return self.Meta.service.fetch()
-
-    @token_required
-    def put(self, uuid=None):
-        """put where token is required"""
-        meth = getattr(self.Meta, 'allowed_methods', None)
-        if meth and (not meth.__contains__(request.method)):
-            abort(405)
-
-        data = request.json
-        user = session['current_user']
-        data['data']['updated_by'] = user['id']
-        return self.Meta.service.update(data['data'], uuid)
-
-
 class CreateApiView(Resource):
     """
     create api view
     """
-    def post(self):
+    def post(self, *args, **kwargs):
         """post for generic"""
         meth = getattr(self.Meta, 'allowed_methods', None)
         schema = getattr(self.Meta, 'schema', None)
@@ -125,7 +33,7 @@ class FetchApiView(Resource):
     """
     fetch api view
     """
-    def get(self, uuid=None):
+    def get(self, uuid=None, *args, **kwargs):
         meth = getattr(self.Meta, 'allowed_methods', None)
         schema = getattr(self.Meta, 'schema', None)
         schemas = getattr(self.Meta, 'schemas', None)
@@ -179,7 +87,7 @@ class UpdateApiView(Resource):
             user = session['current_user']
             data['data']['updated_by'] = user['id']
 
-        obj = service.get_details(uuid)
+        obj = service.fetch(uuid)
         if not obj:
             return {'status': 'error', 'data': {}, 'message': 'No data found'}, 400
         result_data, errors = schema.load(data['data'], instance=obj, partial=True)
@@ -188,6 +96,38 @@ class UpdateApiView(Resource):
         result_data = service.perform_update(result_data)
         response_data = schema.dump(result_data).data
         return {'status': 'success', 'data': response_data, 'message': ''}, 200
+
+
+class ProtectedCreateApiView(CreateApiView):
+    """
+    protected create api view
+    """
+
+    @token_required
+    def post(self, *args, **kwargs):
+        """
+        post api
+        :param uuid:
+        :return:
+        """
+        kwargs['token'] = True
+        return super().post(*args, **kwargs)
+
+
+class ProtectedFetchApiView(FetchApiView):
+    """
+    protected Update api view
+    """
+
+    @token_required
+    def get(self, uuid=None, *args, **kwargs):
+        """
+        get api
+        :param uuid:
+        :return:
+        """
+        kwargs['token'] = True
+        return super().get(uuid, *args, **kwargs)
 
 
 class ProtectedUpdateApiView(UpdateApiView):
@@ -215,8 +155,8 @@ class ApiView(CreateApiView,
     pass
 
 
-class ProtectedApiView(CreateApiView,
-                       FetchApiView,
+class ProtectedApiView(ProtectedCreateApiView,
+                       ProtectedFetchApiView,
                        ProtectedUpdateApiView):
     """
     protected api view

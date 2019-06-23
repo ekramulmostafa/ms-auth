@@ -292,17 +292,12 @@ class UserTestService(BaseService):
         """ Meta data"""
         model = Users
 
-    @staticmethod
-    def get_details(uuid):
-        user = Users.query.get(uuid)
-        return user
-
-    @staticmethod
-    def get_all():
-        users = Users.query.all()
-        return users
-
     def perform_create(self, instance=None):
+        """
+        perform create
+        :param instance:
+        :return:
+        """
         instance = self.save_instance(instance)
         VerificationCodes.save_verification_code(user=instance, types=2, status=1)
         return instance

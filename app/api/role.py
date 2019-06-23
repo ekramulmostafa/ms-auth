@@ -2,7 +2,7 @@
 from flask import jsonify, request
 from flask_restplus import Namespace, Resource
 
-from app.api.base import DefaultResource, ProtectedResource, ApiView
+from app.api.base import ApiView
 from app.logging import Logger
 from app.models.role import RoleSchema
 from app.utils.get_current_user import get_current_user
@@ -162,7 +162,7 @@ class RoleList(ApiView):
 
 
 @api.route('/<uuid:uuid>/')
-class RoleDetail(ProtectedResource):
+class RoleDetail(ApiView):
     """Test Base details functionality"""
     class Meta:
         """meta class"""
