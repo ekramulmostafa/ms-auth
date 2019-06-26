@@ -101,17 +101,17 @@ class UsersServices:
             logger.warning("User no result found", data=str(ex))
             return {'status': 'error', 'data': {}, 'message': str(ex)}, 400
 
-    # def create(self, data: dict):
-    #     """User create method"""
-    #     if not data:
-    #         raise Exception('No input data provided')
-    #     result_data, errors = user_schema.load(data)
-    #     if errors:
-    #         return {'status': 'error', 'data': {}, 'message': errors}, 422
-    #     result_data.save()
-    #     response_data = user_schema.dump(result_data).data
-    #     VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
-    #     return {'status': 'success', 'data': response_data, 'message': ''}, 201
+    def create(self, data: dict):
+        """User create method"""
+        if not data:
+            raise Exception('No input data provided')
+        result_data, errors = user_schema.load(data)
+        if errors:
+            return {'status': 'error', 'data': {}, 'message': errors}, 422
+        result_data.save()
+        response_data = user_schema.dump(result_data).data
+        VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
+        return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
     def update(self, data: dict, uuid):
         """specific User update"""

@@ -36,11 +36,13 @@ class BaseService(BareboneBaseService):
     def __init__(self):
         """ initiate base service """
         self.model = self.Meta.model
+        self.sortable = None
+        self.filterable = None
 
-    def __call__(self, sortable=[], filterable=[]):
+    def __call__(self, sortable=None, filterable=None):
         """ call function """
-        self.sortable = sortable
-        self.filterable = filterable
+        self.sortable = sortable or []
+        self.filterable = filterable or []
 
     @staticmethod
     def offset_limit(results, values):
