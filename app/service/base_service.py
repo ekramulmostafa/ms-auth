@@ -17,20 +17,15 @@ class BareboneBaseService:
     def fetch(self, uuid=None, values=None):
         """ Get """
 
-    def create(self, json_data):
-        """ Post """
+    def perform_create(self, instance):
+        """ perform create """
 
-    def update(self, uuid=None, json_data=None):
-        """ update """
+    def perform_update(self, instance):
+        """ perform update """
 
 
 class BaseService(BareboneBaseService):
-    """ class base service
-        1. __searchable__ = type array
-        2. __sortable__ = type array
-        3. __filterable__ = type array
-        4. __model__ = type Model
-    """
+    """ class base service """
 
     # def __init__(self, sortable=[], filterable=[]):
     def __init__(self):
@@ -96,9 +91,8 @@ class BaseService(BareboneBaseService):
 
     @staticmethod
     def __expression_return(model, field, val):
-        """
-            filter fields of the object
-        """
+        """ filter fields of the object """
+
         expression = None
         if val.find(',') > 0:
             arr = val.split(',')
