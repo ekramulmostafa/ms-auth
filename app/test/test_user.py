@@ -7,10 +7,10 @@ from flask import url_for
 
 from app.models.users import Users
 from app.models.verification_codes import VerificationCodes
-from app.service.users import UsersServices
+from app.service.users import UserServices
 from app.test import BaseTest
 
-user_service = UsersServices()
+user_service = UserServices()
 
 
 class UserTests(BaseTest):
