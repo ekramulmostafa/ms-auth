@@ -5,7 +5,7 @@ from flask import url_for
 from flask_testing import TestCase
 
 from manage import app
-from app.service.users import UsersServices
+from app.service.users import UserServices
 from app.models import db
 
 
@@ -35,12 +35,12 @@ class BaseTest(TestCase):
             "birth_date": "1993-11-25"
         }
 
-        user = UsersServices().create(user_data)
+        user = UserServices().create(user_data)
         return user[0]['data']
 
     def get_user(self, user_id):
         """get_user helper method"""
-        user = UsersServices().get_user_details(user_id)
+        user = UserServices().get_user_details(user_id)
         return user[0]['data']
 
     def create_role(self):
@@ -87,5 +87,5 @@ class BaseTest(TestCase):
             "email": user['email'],
             "password": '123456',
         }
-        response = UsersServices().login(request_data)
+        response = UserServices().login(request_data)
         return response[0]['data']

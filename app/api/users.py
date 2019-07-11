@@ -6,52 +6,33 @@ from flask_restplus import Namespace, Resource
 from app.api.base import ApiResource, AuthorizedApiResource
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema
-from app.service.users import UsersServices, UserTestService
+from app.service.users import UserServices
 from app.utils.decorator import token_required
 
 user_api = Namespace('user')
-user_service = UsersServices()
+user_service = UserServices()
 
 
 @user_api.route('/')
-class UserListAPI(Resource):
-    """User list api"""
-    def get(self):
-        """GET all users"""
-
-        params = {
-            'search': request.args.get('search'),
-            'sort_by': request.args.get('sort_by', default='created_at'),
-            'order_by': request.args.get('order_by', default='asc'),
-            'offset': request.args.get('offset', 0, type=int),
-            'limit': request.args.get('limit', 20, type=int),
-        }
-        users_attrs = list(Users.__dict__.keys())
-        for param in request.args:
-            if param in users_attrs:
-                params[param] = request.args.get(param)
-
-        return user_service.get_all_users(params)
-
-    def post(self):
-        """create/signup users"""
-        json_data = request.get_json(force=True)
-        return user_service.create(json_data['data'])
+class UserListAPI(ApiResource):
+    """Test Base functionality"""
+    class Meta:
+        """meta class"""
+        service = UserServices()
+        allowed_methods = ['GET', 'POST']
+        schema = UsersModelSchema()
+        schemas = UsersModelSchema(many=True)
 
 
 @user_api.route('/<uuid:uuid>/')
-@user_api.param('uuid', 'user identifier')
-@user_api.response(404, 'User not found')
-class UserDetailAPI(Resource):
-    """User details functionality"""
-    def get(self, uuid):
-        """GET for User API Details"""
-        return user_service.get_user_details(uuid)
-
-    def put(self, uuid):
-        """PUT for User API Update"""
-        data = request.json
-        return user_service.update(data['data'], uuid)
+class UserDetailsAPI(AuthorizedApiResource):
+    """Test Base details functionality"""
+    class Meta:
+        """meta class"""
+        service = UserServices()
+        allowed_methods = ['GET', 'PUT']
+        schema = UsersModelSchema()
+        schemas = UsersModelSchema(many=True)
 
 
 @user_api.route('/login/')
@@ -119,25 +100,3 @@ class CurrentUserUpdatePasswordAPI(Resource):
         data = request.json
         user = Users.query.get(session['current_user']['id'])
         return user_service.update_password(data['data'], user=user)
-
-
-@user_api.route('/log/')
-class TestBaseAPI(ApiResource):
-    """Test Base functionality"""
-    class Meta:
-        """meta class"""
-        service = UserTestService()
-        allowed_methods = ['GET', 'POST']
-        schema = UsersModelSchema()
-        schemas = UsersModelSchema(many=True)
-
-
-@user_api.route('/log/<uuid:uuid>/')
-class TestBaseDetailsAPI(AuthorizedApiResource):
-    """Test Base details functionality"""
-    class Meta:
-        """meta class"""
-        service = UserTestService()
-        allowed_methods = ['GET', 'PUT']
-        schema = UsersModelSchema()
-        schemas = UsersModelSchema(many=True)

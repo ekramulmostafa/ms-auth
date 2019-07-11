@@ -5,9 +5,9 @@ from flask import url_for
 
 from app.test import BaseTest
 
-from app.service.users import UsersServices
+from app.service.users import UserServices
 
-user_service = UsersServices()
+user_service = UserServices()
 
 
 class UserLoginTests(BaseTest):

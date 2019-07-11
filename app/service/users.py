@@ -28,8 +28,22 @@ users_schema = UsersModelSchema(many=True)
 logger = Logger(__name__)
 
 
-class UsersServices:
+class UserServices(BaseService):
     """User services to call internally"""
+
+    class Meta:
+        """ Meta data"""
+        model = Users
+
+    def perform_create(self, instance=None):
+        """
+        perform create
+        :param instance:
+        :return:
+        """
+        instance = self.save_instance(instance)
+        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
+        return instance
 
     def get_all_users(self, params=None):
         """
@@ -101,17 +115,17 @@ class UsersServices:
             logger.warning("User no result found", data=str(ex))
             return {'status': 'error', 'data': {}, 'message': str(ex)}, 400
 
-    # def create(self, data: dict):
-    #     """User create method"""
-    #     if not data:
-    #         raise Exception('No input data provided')
-    #     result_data, errors = user_schema.load(data)
-    #     if errors:
-    #         return {'status': 'error', 'data': {}, 'message': errors}, 422
-    #     result_data.save()
-    #     response_data = user_schema.dump(result_data).data
-    #     VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
-    #     return {'status': 'success', 'data': response_data, 'message': ''}, 201
+    def create(self, data: dict):
+        """User create method"""
+        if not data:
+            raise Exception('No input data provided')
+        result_data, errors = user_schema.load(data)
+        if errors:
+            return {'status': 'error', 'data': {}, 'message': errors}, 422
+        result_data.save()
+        response_data = user_schema.dump(result_data).data
+        VerificationCodes.save_verification_code(user=result_data, types=2, status=1)
+        return {'status': 'success', 'data': response_data, 'message': ''}, 201
 
     def update(self, data: dict, uuid):
         """specific User update"""
@@ -275,29 +289,3 @@ class UsersServices:
         all_users = Users.query.all()
         result = users_schema.dump(all_users)
         return response_generator(status='success', data=result, message=''), 200
-
-    def fetch(self, uuid=None):
-        """User details method"""
-
-        if uuid:
-            return self.get_user_details(uuid)
-
-        return self.get_all()
-
-
-class UserTestService(BaseService):
-    """ Role service """
-
-    class Meta:
-        """ Meta data"""
-        model = Users
-
-    def perform_create(self, instance=None):
-        """
-        perform create
-        :param instance:
-        :return:
-        """
-        instance = self.save_instance(instance)
-        VerificationCodes.save_verification_code(user=instance, types=2, status=1)
-        return instance
