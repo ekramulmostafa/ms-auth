@@ -40,7 +40,7 @@ class UserTests(BaseTest):
         self.assertTrue(response.content_type == 'application/json')
         self.assertEqual(response.status_code, 200)
 
-    def test_02_filter_search_get_all_users(self):
+    def test_02_filter_get_all_users(self):
         """ test filter search all user"""
         base_url = url_for('auth.user_user_list_api')
 
@@ -63,32 +63,18 @@ class UserTests(BaseTest):
 
         response = self.client.get(base_url)
         self.assert200(response)
-        response_data = json.loads(response.data.decode())
 
-        self.assertEqual(response_data['data']['total'], 2)
-        self.assertEqual(response_data['data']['offset'], 0)
-        self.assertEqual(response_data['data']['limit'], 20)
-
-        url = base_url+'?search=A'
+        url = base_url+'?first_name=A'
         response = self.client.get(url)
         self.assert200(response)
         response_data = json.loads(response.data.decode())
-        self.assertEqual(response_data['data']['total'], 1)
+        self.assertEqual(len(response_data['data']), 1)
 
-        url = base_url+'?active=true&sorted_by=username&order_by=desc'
+        url = base_url+'?limit=1'
         response = self.client.get(url)
         self.assert200(response)
         response_data = json.loads(response.data.decode())
-        self.assertEqual(response_data['data']['total'], 2)
-        self.assertEqual(response_data['data']['users'][0]['username'], 'user2')
-
-        url = base_url+'?active=true&sorted_by=first_name&order_by=desc&offset=0&limit=1'
-        response = self.client.get(url)
-        self.assert200(response)
-        response_data = json.loads(response.data.decode())
-        self.assertEqual(response_data['data']['total'], 2)
-        self.assertEqual(response_data['data']['users'][0]['first_name'], 'Z')
-        self.assertEqual(len(response_data['data']['users']), 1)
+        self.assertEqual(len(response_data['data']), 1)
 
     def test_03_create_user_success(self):
         """ test create user"""
@@ -188,12 +174,12 @@ class UserTests(BaseTest):
         user_data['email'] = "user2@example.com"
         user2 = user_service.create(user_data)[0]
 
-        url_user1 = url_for('auth.user_user_detail_api', uuid=user1['data']['id'])
+        url_user1 = url_for('auth.user_user_details_api', uuid=user1['data']['id'])
         response_user1 = self.client.get(url_user1)
         user1_response_data = json.loads(response_user1.data.decode())
         self.assertEqual(response_user1.status_code, 200)
 
-        url_user2 = url_for('auth.user_user_detail_api', uuid=user2['data']['id'])
+        url_user2 = url_for('auth.user_user_details_api', uuid=user2['data']['id'])
 
         response_user2 = self.client.get(url_user2)
         user2_response_data = json.loads(response_user2.data.decode())
@@ -229,7 +215,7 @@ class UserTests(BaseTest):
         user_response_data = json.loads(user_response.data.decode())
         self.assertEqual(user_response.status_code, 201)
 
-        url = url_for('auth.user_user_detail_api', uuid=user_response_data['data']['id'])
+        url = url_for('auth.user_user_details_api', uuid=user_response_data['data']['id'])
         user_data['data']['birth_date'] = "1994-11-25"
         user_json_data = json.dumps(user_data)
 
@@ -312,7 +298,7 @@ class UserTests(BaseTest):
         }
         user_json_data = json.dumps(user_partial_data)
 
-        url = url_for('auth.user_user_detail_api', uuid=user_response_data['data']['id'])
+        url = url_for('auth.user_user_details_api', uuid=user_response_data['data']['id'])
         user_response = self.client.put(
             url,
             data=user_json_data,

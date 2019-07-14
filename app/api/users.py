@@ -18,6 +18,8 @@ class UserListAPI(ApiResource):
     """Test Base functionality"""
     class Meta:
         """meta class"""
+
+        filterable = ['first_name', 'username', 'email']
         service = UserServices()
         allowed_methods = ['GET', 'POST']
         schema = UsersModelSchema()
@@ -25,10 +27,11 @@ class UserListAPI(ApiResource):
 
 
 @user_api.route('/<uuid:uuid>/')
-class UserDetailsAPI(AuthorizedApiResource):
+class UserDetailsAPI(ApiResource):
     """Test Base details functionality"""
     class Meta:
         """meta class"""
+
         service = UserServices()
         allowed_methods = ['GET', 'PUT']
         schema = UsersModelSchema()
