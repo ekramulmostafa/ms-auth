@@ -3,7 +3,7 @@
 from flask import request, session
 from flask_restplus import Namespace, Resource
 
-from app.api.base import ApiResource, AuthorizedApiResource
+from app.api.base import ApiResource
 from app.models.users import Users
 from app.serializers.users import UsersModelSchema
 from app.service.users import UserServices
