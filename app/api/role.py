@@ -34,7 +34,10 @@ class RoleList(ApiResource):
 
 @api.route('/<uuid:uuid>/')
 class RoleDetail(ApiResource):
-    """Test Base details functionality"""
+    """ Test Base details functionality """
     class Meta:
-        """meta class"""
+        """ meta class """
         service = RoleService()
+        allowed_methods = ['GET', 'PUT']
+        schema = RoleSchema()
+        schemas = RoleSchema(many=True)

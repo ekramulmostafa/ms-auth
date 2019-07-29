@@ -1,13 +1,13 @@
 """Model for Role Permission resource"""
-import datetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy import and_
 from marshmallow import fields
+from app.models.base_model import BaseModel
 from . import db, ma
 
 
-class RolePermission(db.Model):
+class RolePermission(BaseModel):
     """Description for role permission model"""
     __table_args__ = (
         db.UniqueConstraint('role_id', 'permission_id', name='unique_role_permission'),
@@ -20,9 +20,9 @@ class RolePermission(db.Model):
     status = db.Column(db.Boolean(), nullable=False, default=True)
     created_by = db.Column(db.String(100), nullable=False)
     updated_by = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
-                           onupdate=datetime.datetime.utcnow, nullable=False)
+    # created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    # updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow,
+    #                        onupdate=datetime.datetime.utcnow, nullable=False)
 
     @classmethod
     def get_by_role_permission(cls, role_id, permisson_id):
@@ -33,11 +33,11 @@ class RolePermission(db.Model):
         ).first()
         return role_permission_obj
 
-    def save_data(self, commit=True):
-        """Save data for role permission model"""
-        db.session.add(self)
-        if commit is True:
-            db.session.commit()
+    # def save_data(self, commit=True):
+    #     """Save data for role permission model"""
+    #     db.session.add(self)
+    #     if commit is True:
+    #         db.session.commit()
 
 
 class RolePermissionSchema(ma.ModelSchema):

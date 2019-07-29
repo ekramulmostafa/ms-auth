@@ -1,26 +1,26 @@
 """Permission Model and Its Manager."""
-import datetime
 import uuid
 from sqlalchemy import desc, asc, or_
 from sqlalchemy import inspect
 from sqlalchemy.dialects.postgresql import UUID
 from marshmallow import fields
 from app.serializers.role_custom import RoleCustomSchema
+from app.models.base_model import BaseModel
 
 from . import db, ma
 
 
-class Permission(db.Model):
+class Permission(BaseModel):
     """ permission table model """
 
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(100), nullable=False)
     code = db.Column(db.String(30), unique=True, nullable=False)
     active = db.Column(db.Boolean, nullable=False)
-    created_by = db.Column(db.String(100), nullable=True)
-    updated_by = db.Column(db.String(100), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
-    updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    # created_by = db.Column(db.String(100), nullable=True)
+    # updated_by = db.Column(db.String(100), nullable=True)
+    # created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
+    # updated_at = db.Column(db.DateTime, default=datetime.datetime.utcnow, nullable=False)
 
     def __init__(self, **kwargs):
         """constructor."""
@@ -28,11 +28,11 @@ class Permission(db.Model):
         self.code = kwargs.get('code')
         self.active = kwargs.get('active')
 
-    def save(self, commit=True):
-        """Permission save method."""
-        db.session.add(self)
-        if commit is True:
-            db.session.commit()
+    # def save(self, commit=True):
+    #     """Permission save method."""
+    #     db.session.add(self)
+    #     if commit is True:
+    #         db.session.commit()
 
     def get_permission(self, **kwargs):
         """ this is common method for returing list of permission including filter & search"""
