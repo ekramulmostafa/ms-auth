@@ -1,5 +1,6 @@
 """Test Role"""
 
+from datetime import datetime, timedelta
 import unittest
 import json
 from flask import url_for
@@ -30,10 +31,7 @@ class PermissionTests(BaseTest):
         )
 
         json_response = json.loads(response.get_data(as_text=True))['data']
-        # print('peeeeeeeeeeeeeep')
-        # print(json_response)
         post_id = json_response['id']
-
 
         self.assertEqual(response.status_code, 201)
 
@@ -46,13 +44,13 @@ class PermissionTests(BaseTest):
             }
         }
 
-        role_data = json.dumps(params)
+        permission_data = json.dumps(params)
 
         url = url_for('auth.permission_permission_detail', uuid=post_id)
 
         response = self.client.put(
             url,
-            data=role_data,
+            data=permission_data,
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 200)
@@ -92,8 +90,8 @@ class PermissionTests(BaseTest):
                 'name': 'test_permission3',
                 'active': True,
                 "code": "TEST_PERMISSION3",
-                'created_by': 'Test_12381237817',
-                'updated_by': 'Test_12381237817'
+                'created_by': 'Test_123812378174',
+                'updated_by': 'Test_123812378174'
             }
         ]
 
@@ -114,7 +112,7 @@ class PermissionTests(BaseTest):
 
     def test_filter_data(self):
         """ Test filter data with filtered string """
-        url = url_for('auth.permission_permission_list')
+        permission_url = url_for('auth.permission_permission_list')
         params = [
             {
                 'name': 'test_permission1',
@@ -134,21 +132,22 @@ class PermissionTests(BaseTest):
                 'name': 'test_permission3',
                 'active': True,
                 "code": "TEST_PERMISSION3",
-                'created_by': 'Test_12381237817',
-                'updated_by': 'Test_12381237817'
+                'created_by': 'Test_123812378171',
+                'updated_by': 'Test_123812378171'
             }
         ]
 
         for param in params:
-            role_data = json.dumps({"data": param})
+            temp = {"data": param}
+            role_data = json.dumps(temp)
 
-            response = self.client.post(
-                url,
+            self.client.post(
+                permission_url,
                 data=role_data,
                 content_type='application/json'
             )
 
-        extra_url = url + '?active=1'
+        extra_url = permission_url + '?active=1'
         response = self.client.get(
             extra_url,
             content_type='application/json'
@@ -157,7 +156,13 @@ class PermissionTests(BaseTest):
         json_response = json.loads(response.get_data(as_text=True))['data']
         self.assertEqual(len(json_response), 2)
 
-        extra_url = url + '?created_at=2019-07-28,2019-07-30'
+        today = datetime.utcnow()
+        yesterday = today - timedelta(1)
+        yesterday = yesterday.strftime("%Y-%m-%d")
+        tomorrow = today + timedelta(1)
+        tomorrow = tomorrow.strftime("%Y-%m-%d")
+
+        extra_url = permission_url + '?created_at='+yesterday+','+tomorrow
         response = self.client.get(
             extra_url,
             content_type='application/json'
@@ -165,6 +170,7 @@ class PermissionTests(BaseTest):
         self.assert200(response)
         json_response = json.loads(response.get_data(as_text=True))['data']
         self.assertEqual(len(json_response), 3)
+
 
 if __name__ == "__main__":
     unittest.main()

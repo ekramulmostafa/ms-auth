@@ -1,5 +1,6 @@
 """Test Role"""
 
+from datetime import datetime, timedelta
 import unittest
 import json
 from flask import url_for
@@ -87,15 +88,15 @@ class RoleTests(BaseTest):
             {
                 'name': 'test_role4',
                 'active': True,
-                'created_by': 'Test_12381237817',
-                'updated_by': 'Test_12381237817'
+                'created_by': 'Test_123812378173',
+                'updated_by': 'Test_123812378173'
             }
         ]
 
         for param in params:
             role_data = json.dumps({"data": param})
 
-            response = self.client.post(
+            self.client.post(
                 url,
                 data=role_data,
                 content_type='application/json'
@@ -126,15 +127,16 @@ class RoleTests(BaseTest):
             {
                 'name': 'test_role4',
                 'active': True,
-                'created_by': 'Test_12381237817',
-                'updated_by': 'Test_12381237817'
+                'created_by': 'Test_123812378172',
+                'updated_by': 'Test_123812378172'
             }
         ]
 
         for param in params:
-            role_data = json.dumps({"data": param})
+            data = {"data": param}
+            role_data = json.dumps(data)
 
-            response = self.client.post(
+            self.client.post(
                 url,
                 data=role_data,
                 content_type='application/json'
@@ -149,7 +151,13 @@ class RoleTests(BaseTest):
         json_response = json.loads(response.get_data(as_text=True))['data']
         self.assertEqual(len(json_response), 2)
 
-        extra_url = url + '?created_at=2019-07-28,2019-07-30'
+        today = datetime.utcnow()
+        yesterday = today - timedelta(1)
+        yesterday = yesterday.strftime("%Y-%m-%d")
+        tomorrow = today + timedelta(1)
+        tomorrow = tomorrow.strftime("%Y-%m-%d")
+
+        extra_url = url + '?created_at=' + yesterday + ',' + tomorrow
         response = self.client.get(
             extra_url,
             content_type='application/json'
@@ -157,6 +165,7 @@ class RoleTests(BaseTest):
         self.assert200(response)
         json_response = json.loads(response.get_data(as_text=True))['data']
         self.assertEqual(len(json_response), 3)
+
 
 if __name__ == "__main__":
     unittest.main()
