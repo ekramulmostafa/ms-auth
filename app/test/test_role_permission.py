@@ -17,8 +17,8 @@ class RolePermissionTests(BaseTest):
             'data': {
                 'name': 'role_test',
                 'active': True,
-                'created_by': 'Test_12381237817',
-                'updated_by': 'Test_12381237817'
+                'created_by': 'Test_1238123781',
+                'updated_by': 'Test_1238123781'
             }
         }
         role_data = json.dumps(prm)
@@ -36,8 +36,8 @@ class RolePermissionTests(BaseTest):
                 'code': 'permission_test',
                 'name': 'permission_test',
                 'active': True,
-                'created_by': 'Test_12381237817',
-                'updated_by': 'Test_12381237817'
+                'created_by': 'Test_1238123781755',
+                'updated_by': 'Test_1238123781755'
             }
         }
         permission_data = json.dumps(prm)
